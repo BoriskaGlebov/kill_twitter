@@ -33,3 +33,6 @@ services:
           memory: 256M
     networks:
       - monitoring_net
+networks:
+  monitoring_net:
+    name: monitoring_net
