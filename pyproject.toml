@@ -1,0 +1,40 @@
+[tool.black]
+line-length = 120
+target-version = [ "py312",]
+exclude = "venv"
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+multi_line_output = 3
+skip = [ "venv", ]
+line_length = 120
+
+[tool.autoflake]
+check = false
+in-place = true
+recursive = true
+exclude = "venv"
+remove-all-unused-imports = true
+ignore-init-module-imports = true
+remove-duplicate-keys = true
+remove-unused-variables = true
+
+[tool.flake8]
+max-line-length = 120
+ignore = ['E701','B008']
+#ignore = ['E203', 'E266', 'E501', 'W503', 'F403', 'F401', 'E701']
+#count = true
+#
+#[tool.black]
+#line-length = 88
+#
+#[tool.isort]
+#profile = "black"
+#line_length = 88
+
+
+
+#[mypy]
+##files = src/
+#ignore_missing_imports = 'True'
