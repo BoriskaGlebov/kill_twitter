@@ -2,4 +2,4 @@ print("hrllasd")
 print("hrllasd")
 
 
-print('asd')
+print("asd")
