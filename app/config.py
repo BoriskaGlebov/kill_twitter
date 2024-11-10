@@ -1,6 +1,6 @@
 import os
 
-from pydantic import SecretStr, ValidationError
+from pydantic import ConfigDict, SecretStr, ValidationError
 from pydantic_settings import BaseSettings
 
 env_file_local: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
@@ -22,8 +22,10 @@ class Settings(BaseSettings):
     UPLOAD_DIRECTORY: str
     PYTHONPATH: str
 
-    class Config:
-        extra = "ignore"  # Игнорировать дополнительные поля
+    model_config = ConfigDict(extra="ignore")
+
+    # class Config:
+    #     extra = "ignore"  # Игнорировать дополнительные поля
 
     def get_db_url(self) -> str:
         """
