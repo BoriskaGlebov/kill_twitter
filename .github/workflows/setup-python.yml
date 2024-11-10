@@ -41,7 +41,7 @@ jobs:
           echo "DB_TEST=${{ secrets.DB_TEST }}" >> .env
           echo "UPLOAD_DIRECTORY=${{ secrets.UPLOAD_DIRECTORY }}" >> .env
           echo "ENV=${{ ENV }}" >> .env
-          docker-compose up --build -d
+          docker compose up --build -d
 
       - name: Build and run Docker Compose
         run: |
