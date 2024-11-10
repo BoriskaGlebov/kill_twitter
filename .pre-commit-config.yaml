@@ -1,5 +1,45 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0  # Use the latest stable version
+    hooks:
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: check-docstring-first
+      - id: name-tests-test
+      - id: requirements-txt-fixer
+
+  - repo: https://github.com/psf/black
+    rev: 24.10.0  # Use the latest stable version
+    hooks:
+      - id: black
+        language_version: python3  # Specify Python version
+
+  - repo: https://github.com/PyCQA/isort
+    rev: v5.3.12  # Use the latest stable version
+    hooks:
+      - id: isort
+
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.3.1
+    hooks:
+      - id: autoflake
+        args: [ "--remove-all-unused-imports", "--in-place" ]
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: v7.1.1  # Use the latest stable version
+    hooks:
+      - id: flake8
+
+
+
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
       - id: check-yaml
@@ -31,28 +71,11 @@ repos:
     rev: 24.8.0
     hooks:
       - id: black
-
-#  - repo: https://github.com/PyCQA/flake8
-#    rev: 7.1.1
-#    hooks:
-#      - id: flake8
-  #
-#  - repo: https://github.com/PyCQA/isort
-#    rev: 5.13.2
-#    hooks:
-#      - id: isort
-#  #
-#  - repo: https://github.com/pre-commit/mirrors-mypy
-#    rev: v1.11.2  # specify the version you want to use
-#    hooks:
-#      - id: mypy
-#        additional_dependencies: # optional, add any additional dependencies if needed
-#          - types-atomicwrites
-#          - types-tabulate
-#          - types-freezegun
-#
-#  - repo: https://github.com/PyCQA/autoflake
-#    rev: v2.3.1  # Specify the version you want to use
-#    hooks:
-#      - id: autoflake
-#        args: [ --remove-all-unused-imports, --in-place ]  # Customize arguments as needed
+  - repo: https://github.com/python/mypy
+    rev: v1.13.0 # specify the version you want to use
+    hooks:
+      - id: mypy
+        additional_dependencies: # optional, add any additional dependencies if needed
+          - types-atomicwrites
+          - types-tabulate
+          - types-freezegun
