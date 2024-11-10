@@ -8,6 +8,7 @@ identify==2.6.2
 iniconfig==2.0.0
 isort==5.13.2
 mccabe==0.7.0
+mypy==1.13.0
 mypy-extensions==1.0.0
 nodeenv==1.9.1
 packaging==24.2
@@ -19,4 +20,5 @@ pycodestyle==2.12.1
 pyflakes==3.2.0
 pytest==8.3.3
 PyYAML==6.0.2
+typing_extensions==4.12.2
 virtualenv==20.27.1
