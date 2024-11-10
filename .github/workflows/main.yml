@@ -8,7 +8,7 @@ on:
   pull_request:
     branches:
       - main
-      - module_30
+      - ci
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 jobs:
