@@ -21,8 +21,10 @@ remove-duplicate-keys = true
 remove-unused-variables = true
 
 [tool.flake8]
-max-line-length = 120
-ignore = ['E701','B008']
+#line-length = 120
+#ignore = ['E701','B008']
+max-line-length = 120  # Установите желаемую максимальную длину строки
+ignore = ["E203", "E266", "E501"]  # Игнорируйте определенные ошибки
 #ignore = ['E203', 'E266', 'E501', 'W503', 'F403', 'F401', 'E701']
 #count = true
 #
