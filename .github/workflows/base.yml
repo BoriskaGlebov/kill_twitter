@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline correct
 
 on:
   push:
@@ -8,21 +8,25 @@ on:
   pull_request:
     branches:
       - main
-      - сi
-
+      - ci
 
 jobs:
-  run_checks:
-    runs-on: ubuntu-latest
-
+  test:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu image
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      #          pip install pytest  # Install Pytest and other dependencies as needed
 
       - name: Set PYTHONPATH
         run: |
@@ -33,30 +37,17 @@ jobs:
           echo "PYTHONPATH=$PYTHONPATH"
           python -c "import sys; print(sys.path)"
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
       - name: List directory contents
         run: |
           ls -R
-
-
-      # Условный шаг для выполнения тестов в зависимости от параметра
       - name: Run unit tests
-        run: pytest tests
+        run: python -m pytest tests
 
-      # Условный шаг для выполнения проверки типов в зависимости от параметра
       - name: Run MyPy type checking
         run: mypy .
-
-      # Условный шаг для выполнения проверок форматирования в зависимости от параметра
       - name: Run Black formatting check
         run: black --diff --check .
-
       - name: Run Isort check
         run: isort --check-only .
-
       - name: Run Flake8 linting
         run: flake8 .
-
-      # Добавьте дополнительные проверки по аналогии...
