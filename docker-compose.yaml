@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16
+    container_name: postgres_diploma
+    restart: always
+    env_file:
+      - .env  # Используем переменную окружения для выбора файла .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      #      POSTGRES_MULTIPLE_DATABASES: ${POSTGRES_DB},${POSTGRES_DB3}
+      POSTGRES_DB: ${DB_NAME}
+      TZ: Europe/Moscow
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      #      - ./pg_logs/:/var/lib/postgresql/logs # Подключение папки для логов,в будущем можно подключить в хранилище докера
+      #для нормального просмотра содержимого логов нужно  sudo chown 999:999 -R pg_logs/ && sudo сhmod -R 777 pg_logs/
+    #      - ./postgresql.conf:/etc/postgresql/postgresql.conf # Подключение конфигурационного файла
+    #    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    networks:
+      - monitoring_net
