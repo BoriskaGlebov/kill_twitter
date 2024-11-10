@@ -20,6 +20,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup  # This job depends on the setup job
     steps:
+      - name: start
+        uses: ./.github/workflows/setup-python.yml  # Call the reusable workflow
+        with:
+          python-version: '3.12'  # Specify the Python version
+
       - name: Checkout code
         uses: actions/checkout@v4
 
