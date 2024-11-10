@@ -1,0 +1,100 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - ci
+  pull_request:
+    branches:
+      - main
+      - ci
+  workflow_dispatch:
+    inputs:
+      check_type:
+        description: 'Choose the type of check to run'
+        required: true
+        default: 'all'
+        options:
+          - all
+          - tests
+          - type_checking
+          - formatting_checks
+          - isort_checks
+          - flake8
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+  run_tests:
+    runs-on: ubuntu-latest
+    needs: setup  # Зависит от job setup
+    if: ${{ github.event.inputs.check_type == 'all' || github.event.inputs.check_type == 'tests' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run unit tests
+        run: pytest tests
+
+  type_checking:
+    runs-on: ubuntu-latest
+    needs: setup  # Зависит от job setup
+    if: ${{ github.event.inputs.check_type == 'all' || github.event.inputs.check_type == 'type_checking' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run MyPy type checking
+        run: mypy .
+
+  formatting_checks:
+    runs-on: ubuntu-latest
+    needs: setup  # Зависит от job setup
+    if: ${{ github.event.inputs.check_type == 'all' || github.event.inputs.check_type == 'formatting_checks' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Black formatting check
+        run: black --diff --check .
+
+  isort_checks:
+    runs-on: ubuntu-latest
+    needs: setup  # Зависит от job setup
+    if: ${{ github.event.inputs.check_type == 'all' || github.event.inputs.check_type == 'isort_checks' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Isort check
+        run: isort --check-only .
+
+  flake8_checks:
+    runs-on: ubuntu-latest
+    needs: setup  # Зависит от job setup
+    if: ${{ github.event.inputs.check_type == 'all' || github.event.inputs.check_type == 'flake8' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Flake8 linting
+        run: flake8 .
