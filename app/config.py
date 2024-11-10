@@ -1,7 +1,7 @@
 import os
 
-from pydantic import ConfigDict, SecretStr, ValidationError
-from pydantic_settings import BaseSettings
+from pydantic import SecretStr, ValidationError
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 env_file_local: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
 env_file_docker: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env.docker")
@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     UPLOAD_DIRECTORY: str
     PYTHONPATH: str
 
-    model_config = ConfigDict(extra="ignore")
+    model_config = SettingsConfigDict(extra="ignore")
 
     # class Config:
     #     extra = "ignore"  # Игнорировать дополнительные поля
@@ -62,6 +62,7 @@ def get_settings() -> Settings:
     """Получение базовых настроек приложения"""
     env_file = env_file_docker if os.getenv("ENV") == "docker" else env_file_local
     try:
+        print(env_file)
         return Settings(_env_file=env_file)
     except ValidationError as e:
         # Извлечение сообщений об ошибках с указанием полей
@@ -76,5 +77,9 @@ def get_settings() -> Settings:
 
 try:
     settings = get_settings()
+    print(settings)
 except RuntimeError as e:
     print(e)
+
+# print(Settings(model_config=SettingsConfigDict(env_file=env_file_docker, extra="ignore")))
+#
