@@ -33,6 +33,11 @@ services:
           memory: 256M
     networks:
       - monitoring_net
+
+volumes:
+  pg_data:
+    name: diploma_db
+
 networks:
   monitoring_net:
     name: monitoring_net
