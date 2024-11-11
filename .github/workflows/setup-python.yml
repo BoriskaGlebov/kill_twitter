@@ -24,9 +24,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Set PYTHONPATH
-        run: |
-          echo "PYTHONPATH=$(pwd):$(pwd)" >> $GITHUB_ENV
+#      - name: Set PYTHONPATH
+#        run: |
+#          echo "PYTHONPATH=$(pwd):$(pwd)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
