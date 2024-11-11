@@ -1,6 +1,6 @@
 import logging
 from random import randint
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator
 
 import pytest
 import pytest_asyncio
@@ -8,7 +8,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import Settings, get_settings
+from app.config import get_settings
 from app.database import async_test_session
 from app.dependencies import get_session
 from app.main import app
@@ -89,7 +89,7 @@ async def async_client() -> AsyncGenerator[AsyncClient, None]:
 
 
 @pytest.fixture(scope="session")
-def config() -> Generator[Settings, None]:
+def config():
     """
     Фикстура для тестов конфигурации.
 
