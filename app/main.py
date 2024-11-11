@@ -152,9 +152,9 @@ app.mount("/static", StaticFiles(directory=settings.static_path()), name="static
 templates = Jinja2Templates(directory=settings.template_path())
 
 # Определение обработчиков исключений
-app.add_exception_handler(HTTPException, http_exception_handler)
-app.add_exception_handler(IntegrityError, integrity_error_exception_handler)
-app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(HTTPException, http_exception_handler)  # type: ignore
+app.add_exception_handler(IntegrityError, integrity_error_exception_handler)  # type: ignore
+app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore
 
 
 @app.get("/", response_class=HTMLResponse)
