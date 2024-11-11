@@ -37,6 +37,7 @@ jobs:
 
           echo "Contents of .env file:"
           cat .env
+          docker compose up --build -d
 
 
       - name: Install dependencies
