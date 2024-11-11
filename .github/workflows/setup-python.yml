@@ -43,6 +43,9 @@ jobs:
           echo "DB_TEST=${{ secrets.DB_TEST }}" >> .env
           echo "UPLOAD_DIRECTORY=${{ secrets.UPLOAD_DIRECTORY }}" >> .env
           echo "PYTHONPATH=${{ secrets.PYTHONPATH }}" >> .env
+
+          echo "Contents of .env file:"
+          cat .env
           docker compose up --build -d
 
       - name: Build and run Docker Compose

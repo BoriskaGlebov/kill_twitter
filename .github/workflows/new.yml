@@ -36,7 +36,7 @@ jobs:
           echo "PYTHONPATH=${{ secrets.PYTHONPATH }}" >> .env
 
           echo "Contents of .env file:"
-          cat .env  # Выводим содержимое файла
+          cat .env
 
 
       - name: Install dependencies
