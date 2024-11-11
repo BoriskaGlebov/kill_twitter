@@ -1,7 +1,7 @@
 from fastapi import HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
-from starlette.responses import JSONResponse
 
 
 async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
