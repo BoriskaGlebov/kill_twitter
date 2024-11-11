@@ -6,10 +6,12 @@
 # from app.config import get_settings
 #
 #
-# def test_config(config):
-#     """Проверка правильности настроек для работы приложения локально"""
-#     assert config.get_test_db_url() == "postgresql+asyncpg://admin:password@localhost:5432/test_kill_twitter"
-#     assert config.get_db_url() == "postgresql+asyncpg://admin:password@localhost:5432/kill_twitter"
+def test_config(config):
+    """Проверка правильности настроек для работы приложения локально"""
+    assert config.get_test_db_url() == "postgresql+asyncpg://admin:password@localhost:5432/test_kill_twitter"
+    assert config.get_db_url() == "postgresql+asyncpg://admin:password@localhost:5432/kill_twitter"
+
+
 #
 #
 # def test_monkeypass(monkeypatch):
