@@ -35,6 +35,9 @@ jobs:
           echo "UPLOAD_DIRECTORY=${{ secrets.UPLOAD_DIRECTORY }}" >> .env
           echo "PYTHONPATH=${{ secrets.PYTHONPATH }}" >> .env
 
+          echo "Contents of .env file:"
+          cat .env  # Выводим содержимое файла
+
 
       - name: Install dependencies
         run: |
