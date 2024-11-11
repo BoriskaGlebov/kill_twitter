@@ -51,10 +51,10 @@ jobs:
         run: |
           docker compose up --build -d
 
-      - name: Run Alembic Migrations
-        run: |
-          # Wait for the database service to be ready (optional, but recommended)
-          sleep 10  # Adjust this time as necessary based on your database startup time
-
-          # Run Alembic migrations inside the running container
-          docker exec <your_container_name> alembic -x db=test upgrade head
+#      - name: Run Alembic Migrations
+#        run: |
+#          # Wait for the database service to be ready (optional, but recommended)
+#          sleep 10  # Adjust this time as necessary based on your database startup time
+#
+#          # Run Alembic migrations inside the running container
+#          docker exec <your_container_name> alembic -x db=test upgrade head
