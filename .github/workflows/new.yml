@@ -40,8 +40,17 @@ jobs:
 
           echo "Contents of .env file:"
           cat .env
-          docker compose up --build -d
 
+      - name: Build and run Docker Compose
+        run: |
+          docker compose up --build -d
+      - name: Run Alembic Migrations
+        run: |
+          # Wait for the database service to be ready (optional, but recommended)
+          sleep 10  # Adjust this time as necessary based on your database startup time
+
+          # Run Alembic migrations inside the running container
+          alembic -x db=test upgrade head
 
       - name: Install dependencies
         run: |
