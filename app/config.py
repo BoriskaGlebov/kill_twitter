@@ -24,9 +24,6 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(extra="ignore")
 
-    # class Config:
-    #     extra = "ignore"  # Игнорировать дополнительные поля
-
     def get_db_url(self) -> str:
         """
         Получает url для Боевой БД
@@ -80,6 +77,3 @@ try:
     print(settings)
 except RuntimeError as e:
     print(e)
-
-# print(Settings(model_config=SettingsConfigDict(env_file=env_file_docker, extra="ignore")))
-#

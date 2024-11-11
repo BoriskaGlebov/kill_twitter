@@ -1,4 +1,4 @@
-name: Setup Python and Install Dependencies
+name: Setup Python and Install Dependencies # Просто название проверки, это переиспользуемый workflow
 
 on:
   workflow_call:
@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 #Копирование кода в рабочую среду гита
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ inputs.python-version }}
+          python-version: ${{ inputs.python-version }} #установка питона
 
       - name: Install dependencies
         run: |

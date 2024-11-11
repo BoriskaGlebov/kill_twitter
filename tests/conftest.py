@@ -73,5 +73,6 @@ logging.basicConfig(level=logging.ERROR, format="%(asctime)s - %(levelname)s - %
 
 @pytest.fixture(scope="session")
 def config():
+    """Фикстура для тестов конфигурации"""
     settings = get_settings()
     yield settings
