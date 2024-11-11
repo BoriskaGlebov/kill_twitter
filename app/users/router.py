@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Any, Dict, List, Union
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,7 +21,7 @@ async def get_all_users(async_session_dep=Depends(get_session)) -> list[SUserAdd
     :return: Список пользователей.
     """
     res = await UserDAO.find_all(async_session=async_session_dep)
-    return res
+    return [SUserAdd(**user.to_dict()) for user in res] if res else []
 
 
 @router.post("/users", status_code=201, summary="Получить токен для пользователя и добавляет его в БД")
@@ -35,8 +35,8 @@ async def create_user(
     :param request_body: Данные для создания пользователя.
     :return: Созданный пользователь с токеном.
     """
-    res: SUserAdd = await UserDAO.add(async_session=async_session_dep, **request_body.model_dump())
-    return res
+    res = await UserDAO.add(async_session=async_session_dep, **request_body.model_dump())
+    return SUserAdd(**res.to_dict())
 
 
 @router.get("/users", summary="Залогинить пользователя по токену")
@@ -50,10 +50,10 @@ async def login_users(
     :param api_key: Токен API пользователя.
     :return: Информация о пользователе.
     """
-    res = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
+    res = await UserDAO.find_one_or_none(async_session=async_session_dep, api_key=api_key)
     if res is None:
         raise HTTPException(status_code=401, detail="Пользователь не найден или токен недействителен.")
-    return res
+    return SUserAdd(**res.to_dict())
 
 
 #
@@ -62,7 +62,7 @@ async def update_users(
     async_session_dep: AsyncSession = Depends(get_session),
     api_key: str = Depends(verify_api_key),
     request_body: RBUsersUpdate = Depends(),
-) -> Union[List[SUserAdd], dict]:
+) -> Union[List[SUserAdd], Dict[str, Any]]:
     """
     Обновление данных пользователя по токену API.
 
@@ -72,19 +72,18 @@ async def update_users(
     :return: Обновленные данные пользователя или сообщение об ошибке.
     """
     res = await UserDAO.update(
-        async_session=async_session_dep, filter_by={"api_key": api_key}, **request_body.model_dump(exclude_none=True)
+        async_session=async_session_dep, **request_body.model_dump(exclude_none=True), filter_by={"api_key": api_key}
     )
+
     if not res:
         raise HTTPException(status_code=404, detail="Пользователь не найден.")
-    return res
+    return [SUserAdd(**user.to_dict()) for user in res]
 
 
-#
-#
 @router.delete("/users", summary="Удалить пользователя по токену")
 async def delete_users(
     async_session_dep: AsyncSession = Depends(get_session), api_key: str = Depends(verify_api_key)
-) -> dict:
+) -> Dict[str, int]:
     """
     Удаление пользователя по токену API.
 
@@ -92,7 +91,7 @@ async def delete_users(
     :param api_key: Токен API пользователя.
     :return: Количество удаленных строк.
     """
-    res = await UserDAO.delete(async_session=async_session_dep, **{"api_key": api_key})
+    res = await UserDAO.delete(async_session=async_session_dep, api_key=api_key)
     if res == 0:
         raise HTTPException(status_code=404, detail="Пользователь не найден.")
     return {"удалено строк": res}
@@ -111,7 +110,7 @@ async def follow_user(
 
     :return: Успешный ответ о подписке.
     """
-    user: User = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
+    user: User | None = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
     if user is None:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
     await FollowDAO.add(async_session=async_session_dep, **{"user_id": user.id, "follower_id": id})
@@ -129,12 +128,12 @@ async def un_follow_user(
     :param async_session_dep: Асинхронная сессия базы данных.
     :param api_key: Токен API текущего пользователя.
 
-    :return: Успешный ответ о отписке или сообщение об ошибке.
+    :return: Успешный ответ об отписке или сообщение об ошибке.
     """
-    user: User = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
+    user: User | None = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
     if user is None:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
-    res = await FollowDAO.delete(async_session=async_session_dep, **{"user_id": user.id, "follower_id": id})
+    res = await FollowDAO.delete(async_session=async_session_dep, user_id=user.id, follower_id=id)
     if res:
         return RBCorrect()
     else:
@@ -155,7 +154,7 @@ async def get_me(
     """
     res = await UserDAO.user_info(async_session=async_session_dep, api_key=api_key)
     if res:
-        return res
+        return RBMe(**res)
     else:
         raise HTTPException(status_code=404, detail="Нет такого пользователя")
 
@@ -175,6 +174,6 @@ async def get_user_by_id(
     """
     res = await UserDAO.user_info(async_session=async_session_dep, user_id=id)
     if res:
-        return res
+        return RBMe(**res)
     else:
         raise HTTPException(status_code=404, detail="Нет такого пользователя")

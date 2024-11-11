@@ -1,15 +1,14 @@
-import asyncio
 import logging
 from random import randint
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import get_settings
+from app.config import Settings, get_settings
 from app.database import async_test_session
 from app.dependencies import get_session
 from app.main import app
@@ -32,17 +31,17 @@ async def get_session_override() -> AsyncGenerator[AsyncSession, None]:
 app.dependency_overrides[get_session] = get_session_override
 
 
-@pytest.fixture(scope="session")
-def event_loop() -> AsyncGenerator:
-    """
-    Фикстура для создания единого event loop для всех тестов.
-    Вот эта функция нужна для работы в одном event loop всех тестов
-
-    :yield: Event loop.
-    """
-    loop = asyncio.get_event_loop()
-    yield loop
-    loop.close()
+# @pytest.fixture(scope="session")
+# def event_loop() -> AsyncGenerator:
+#     """
+#     Фикстура для создания единого event loop для всех тестов.
+#     Вот эта функция нужна для работы в одном event loop всех тестов
+#
+#     :yield: Event loop.
+#     """
+#     loop = asyncio.get_event_loop()
+#     yield loop
+#     loop.close()
 
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
@@ -68,8 +67,8 @@ async def clean_database() -> None:
 #
 #
 @pytest_asyncio.fixture(scope="session")
-async def async_client(event_loop: asyncio.AbstractEventLoop) -> AsyncClient:
-    async with AsyncClient(app=app, base_url="http://test") as client:
+async def async_client() -> AsyncGenerator[AsyncClient, None]:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         users = [
             {"first_name": f"new_{num + 1}", "last_name": f"new_{num + 1}", "api_key": f"api_key_{num + 1}"}
             for num in range(10)
@@ -90,7 +89,7 @@ async def async_client(event_loop: asyncio.AbstractEventLoop) -> AsyncClient:
 
 
 @pytest.fixture(scope="session")
-def config() -> None:
+def config() -> Generator[Settings, None]:
     """
     Фикстура для тестов конфигурации.
 

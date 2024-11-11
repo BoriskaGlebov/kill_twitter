@@ -1,23 +1,24 @@
 from itertools import combinations
 from random import sample
+from typing import Any, List, Set
 
-import factory.fuzzy
+import factory.fuzzy  # type: ignore
 import faker
 
 # from app.medias.models import Media
 # from app.tweets.models import Like, Tweet, TweetMedia
 from app.users.models import Follow, User
 
-faker = faker.Faker("ru_RU")
+faker_instance = faker.Faker("ru_RU")
 
 
 class UserFactory(factory.Factory):
-    """Фабрика рандомных пользователей"""
+    """Фабрика для создания рандомных пользователей."""
 
     class Meta:
         model = User
 
-    # id
+    # Генерация полей пользователя
     first_name = factory.Faker("first_name", locale="ru_Ru")
     last_name = factory.Faker("last_name", locale="ru_Ru")
     api_key = factory.Faker("word")
@@ -32,6 +33,7 @@ class FollowsFactory(factory.Factory):
     # Генерируем неповторяющиеся комбинации
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
+        """Создает экземпляр модели Follow с уникальными user_id и follower_id."""
         # Получаем все уникальные комбинации двух чисел от 1 до 20
         unique_combinations = list(combinations(range(1, 100), 2))
 
@@ -93,9 +95,15 @@ class FollowsFactory(factory.Factory):
 #     media_data = factory.LazyAttribute(lambda o: f"static/images/{o._index}.jpg")
 
 
-def generate_users(num):
-    out_set = set()  # Множество для хранения уникальных комбинаций
-    out_instances = []
+def generate_users(num: int) -> List[User]:
+    """
+    Генерирует список уникальных пользователей.
+
+    :param num: Количество пользователей для генерации.
+    :return: Список экземпляров User.
+    """
+    out_set: Set[str] = set()  # Множество для хранения уникальных комбинаций
+    out_instances: list[Any] = []
 
     while len(out_instances) < num:
         out_instance = UserFactory()
@@ -109,9 +117,15 @@ def generate_users(num):
     return out_instances
 
 
-def generate_follow(num):
+def generate_follow(num: int) -> List[Follow]:
+    """
+    Генерирует список уникальных подписок.
+
+    :param num: Количество подписок для генерации.
+    :return: Список экземпляров Follow.
+    """
     out_set = set()  # Множество для хранения уникальных комбинаций
-    out_instances = []
+    out_instances: list[Any] = []
 
     while len(out_instances) < num:
         out_instance = FollowsFactory()

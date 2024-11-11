@@ -1,21 +1,24 @@
-from typing import Any, Sequence, Type
+from typing import Any, Generic, List, Sequence, Type, TypeVar
 
-from sqlalchemy import Row, delete as sqlalchemy_delete, update as sqlalchemy_update
+from sqlalchemy import delete as sqlalchemy_delete, update as sqlalchemy_update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.database import Base
 
+# Определяем тип переменной для модели
+M = TypeVar("M", bound=Base)
 
-class BaseDAO:
+
+class BaseDAO(Generic[M]):
     """Базовый класс для доступа к данным в БД
     Универсальные методы для работы с БД"""
 
-    model: Type[Base] = Base
+    model: Type[M]  # Указываем, что model будет типа M
 
     @classmethod
-    async def find_all(cls, async_session: AsyncSession, **filter_by) -> Sequence[Base] | None:
+    async def find_all(cls, async_session: AsyncSession, **filter_by) -> Sequence[M] | None:
         """
         Получение списка всех строк таблицы.
         :param async_session: Асинхронная сессия базы данных.
@@ -28,7 +31,7 @@ class BaseDAO:
             return result.scalars().all()
 
     @classmethod
-    async def find_one_or_none_by_id(cls, async_session: AsyncSession, data_id: int) -> Base | None:
+    async def find_one_or_none_by_id(cls, async_session: AsyncSession, data_id: int) -> M | None:
         """
         Получение строки таблицы.
         :param async_session: Асинхронная сессия базы данных.
@@ -41,7 +44,7 @@ class BaseDAO:
             return result.scalar_one_or_none()
 
     @classmethod
-    async def find_one_or_none(cls, async_session: AsyncSession, **filter_by) -> Base | None:
+    async def find_one_or_none(cls, async_session: AsyncSession, **filter_by) -> M | None:
         """
         Получение строки таблицы.
         :param async_session: Асинхронная сессия базы данных.
@@ -54,7 +57,7 @@ class BaseDAO:
             return result.scalar_one_or_none()
 
     @classmethod
-    async def add(cls, async_session: AsyncSession, **values) -> Base | None:
+    async def add(cls, async_session: AsyncSession, **values) -> M:
         """
         Добавить строку
         :param async_session: Асинхронная сессия базы данных.
@@ -73,9 +76,7 @@ class BaseDAO:
                 return new_instance
 
     @classmethod
-    async def update(
-        cls, async_session: AsyncSession, filter_by: dict[Any, Any], **values
-    ) -> Sequence[Row[tuple[Any]]]:
+    async def update(cls, async_session: AsyncSession, filter_by: dict[Any, Any], **values) -> List[M]:
         """
         Обновить строку
         :param async_session: Асинхронная сессия базы данных.
@@ -99,8 +100,11 @@ class BaseDAO:
                 try:
                     updated_rows = result.fetchall()  # Получаем все измененные строки
                     await session.commit()
-                    return updated_rows
-
+                    # return updated_rows
+                    return [
+                        cls.model(**{column: value for column, value in zip(result.keys(), row)})
+                        for row in updated_rows
+                    ]
                 except SQLAlchemyError as e:
                     await session.rollback()
                     raise e

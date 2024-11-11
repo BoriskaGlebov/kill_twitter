@@ -1,13 +1,13 @@
 import pytest
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_def_route(async_client):
     res = await async_client.get("/")
     assert res.status_code == 200
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_all_users(async_client):
     res = await async_client.get("/api/all_users")
     assert res.status_code == 200
@@ -17,7 +17,7 @@ async def test_all_users(async_client):
         assert user["api_key"] == f"api_key_{num + 1}"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_create_user(async_client):
     user = {"first_name": "first_name_{num}", "last_name": "last_name_{num}", "api_key": "api_key_{create}"}
     # корректный запрос
@@ -31,7 +31,7 @@ async def test_create_user(async_client):
 
 
 #
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_login_users(async_client):
     x_api_key = "api_key_1"
     # некорректный api-key
@@ -49,7 +49,7 @@ async def test_login_users(async_client):
     assert res.json()["api_key"] == x_api_key
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_update_users(async_client):
     x_api_key = "api_key_1"
     params_new = {"first_name": "new", "last_name": "new", "api_key": "api_key_{update}"}
@@ -63,7 +63,7 @@ async def test_update_users(async_client):
     await async_client.put("/api/users", headers={"api-key": params_new["api_key"]}, params={"api_key": x_api_key})
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_delete_users(async_client):
     user = {"first_name": "first_name_{num}", "last_name": "last_name_{num}", "api_key": "api_key_{del}"}
     await async_client.post("/api/users", params=user)
@@ -75,7 +75,7 @@ async def test_delete_users(async_client):
     assert res.json() == {"удалено строк": 1}
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_follow_user(async_client):
     user = {"first_name": "first_name_{num}", "last_name": "last_name_{num}", "api_key": "api_key_{follow}"}
     await async_client.post("/api/users", params=user)
@@ -89,7 +89,7 @@ async def test_follow_user(async_client):
     await async_client.delete("/api/users", headers={"api-key": user["api_key"]})
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="session")
 async def test_un_follow_user(async_client):
     user = {"first_name": "first_name_{num}", "last_name": "last_name_{num}", "api_key": "api_key_{unfollow}"}
     await async_client.post("/api/users", params=user)
@@ -101,13 +101,18 @@ async def test_un_follow_user(async_client):
     await async_client.delete("/api/users", headers={"api-key": user["api_key"]})
 
 
+@pytest.mark.asyncio(loop_scope="session")
 async def test_get_me(async_client):
     res = await async_client.get("/api/users/me", headers={"api-key": "api_key_2"})
     assert res.status_code == 200
     assert res.json()["result"] is True
 
 
+@pytest.mark.asyncio(loop_scope="session")
 async def test_get_user_by_id(async_client):
     res = await async_client.get("/api/users/5", headers={"api-key": "api_key_2"})
     assert res.status_code == 200
     assert res.json()["result"] is True
+
+
+#

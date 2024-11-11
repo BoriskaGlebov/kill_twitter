@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager
+from typing import Any, Dict, List
 
-import sqlalchemy
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from prometheus_fastapi_instrumentator import Instrumentator
+from sqlalchemy.exc import IntegrityError
 from starlette.responses import HTMLResponse
 
 from app.config import settings
@@ -27,7 +28,7 @@ from app.users.dao import FollowDAO, UserDAO
 from app.users.router import router as router_users
 
 # API теги и их описание
-tags_metadata = [
+tags_metadata: List[Dict[str, Any]] = [
     {
         "name": "users",
         "description": "Получаются данные по пользователям",
@@ -152,13 +153,13 @@ templates = Jinja2Templates(directory=settings.template_path())
 
 # Определение обработчиков исключений
 app.add_exception_handler(HTTPException, http_exception_handler)
-app.add_exception_handler(sqlalchemy.exc.IntegrityError, integrity_error_exception_handler)
+app.add_exception_handler(IntegrityError, integrity_error_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
 
 @app.get("/", response_class=HTMLResponse)
 async def hello_world(request: Request):
-    return templates.TemplateResponse(name="index.html", context={"request": request})
+    return templates.TemplateResponse(request=request, name="index.html")
 
 
 #

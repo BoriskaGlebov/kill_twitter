@@ -1,20 +1,20 @@
-from typing import Any, Dict, Optional, Sequence
+from typing import Any, Dict, Optional, Sequence, Type
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.dao.base import BaseDAO
 from app.users.models import Follow, User
 
 
-class UserDAO(BaseDAO):
-    model: type[User] = User
+class UserDAO(BaseDAO[User]):
+    model: Type[User] = User
 
     @classmethod
     async def user_info(
         cls,
-        async_session: async_sessionmaker[AsyncSession],
+        async_session: AsyncSession,
         api_key: Optional[str] = None,
         user_id: Optional[int] = None,
     ) -> Dict[str, Any]:
@@ -27,7 +27,7 @@ class UserDAO(BaseDAO):
         :return: Информация о пользователе и его подписках.
         """
         async with async_session as session:
-            out = {"result": True}
+            out: Dict[str, Any] = {"result": True}
             out_keys = ("id", "first_name", "last_name")
             query = select(cls.model).options(
                 selectinload(cls.model.followers),
@@ -53,21 +53,21 @@ class UserDAO(BaseDAO):
                 out["result"] = False
                 return out
 
-    @classmethod
-    async def get_all_tweets(cls, async_session: async_sessionmaker[AsyncSession], api_key: str) -> Optional[User]:
-        """
-        Получить все твиты пользователя по API ключу.
+    # @classmethod
+    # async def get_all_tweets(cls, async_session: async_sessionmaker[AsyncSession], api_key: str) -> Optional[User]:
+    #     """
+    #     Получить все твиты пользователя по API ключу.
+    #
+    #     :param async_session: Асинхронная сессия.
+    #     :param api_key: Ключ доступа.
+    #     :return: Информация о пользователе или None.
+    #     """
+    #     async with async_session() as session:
+    #         query = select(cls.model).options(selectinload(cls.model.tweets)).filter_by(api_key=api_key)
+    #         result = await session.execute(query)
+    #         user_inf: Optional[User] = result.unique().scalars().one_or_none()
+    #         return user_inf
 
-        :param async_session: Асинхронная сессия.
-        :param api_key: Ключ доступа.
-        :return: Информация о пользователе или None.
-        """
-        async with async_session() as session:
-            query = select(cls.model).options(selectinload(cls.model.tweets)).filter_by(api_key=api_key)
-            result = await session.execute(query)
-            user_inf: Optional[User] = result.unique().scalars().one_or_none()
-            return user_inf
 
-
-class FollowDAO(BaseDAO):
+class FollowDAO(BaseDAO[Follow]):
     model: type[Follow] = Follow  # Добавьте типизацию для модели Follow
