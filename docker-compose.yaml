@@ -19,6 +19,12 @@ services:
       #для нормального просмотра содержимого логов нужно  sudo chown 999:999 -R pg_logs/ && sudo сhmod -R 777 pg_logs/
     #      - ./postgresql.conf:/etc/postgresql/postgresql.conf # Подключение конфигурационного файла
     #    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    command: >
+      sh -c "
+        docker-entrypoint.sh postgres &
+        until pg_isready -U ${DB_USER}; do sleep 1; done;
+        psql -U ${DB_USER} -d ${DB_NAME} -c 'CREATE DATABASE test_kill_twitter;'
+        wait"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
       interval: 30s
@@ -33,6 +39,7 @@ services:
           memory: 256M
     networks:
       - monitoring_net
+
 
 volumes:
   pg_data:

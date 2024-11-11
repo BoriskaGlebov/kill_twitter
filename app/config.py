@@ -59,7 +59,6 @@ def get_settings() -> Settings:
     """Получение базовых настроек приложения"""
     env_file = env_file_docker if os.getenv("ENV") == "docker" else env_file_local
     try:
-        print(env_file)
         return Settings(_env_file=env_file)
     except ValidationError as e:
         # Извлечение сообщений об ошибках с указанием полей
@@ -74,6 +73,5 @@ def get_settings() -> Settings:
 
 try:
     settings = get_settings()
-    print(settings)
 except RuntimeError as e:
     print(e)
