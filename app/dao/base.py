@@ -33,7 +33,7 @@ class BaseDAO(Generic[M]):
     @classmethod
     async def find_one_or_none_by_id(cls, async_session: AsyncSession, data_id: int) -> M | None:
         """
-        Получение строки таблицы.
+        Получение строки таблицы по id.
         :param async_session: Асинхронная сессия базы данных.
         :param data_id: Фильтры для выборки по id
         :return: Экземпляр модели.

@@ -10,7 +10,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
-from app.database import async_test_session
+from app.database import Base, async_test_session, test_engine
 from app.dependencies import get_session
 from app.main import app
 from migrations_script import run_alembic_command
@@ -93,6 +93,18 @@ async def async_client() -> AsyncGenerator[AsyncClient, None]:
                 res = await client.post(f"/api/users/{user_id}/follow", headers={"api-key": f"api_key_{follow + 1}"})
                 assert res.status_code in (201, 409)
         yield client
+
+
+@pytest.fixture(scope="session")
+async def test_db(async_client):
+    engine = test_engine  # Используем in-memory SQLite базу данных
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)  # Создаем таблицы
+
+    sessionlocal = async_test_session
+
+    async with sessionlocal() as session:
+        yield session  # Возвращаем сессию для использования в тестах
 
 
 @pytest.fixture(scope="session")
