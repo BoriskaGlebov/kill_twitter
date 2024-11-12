@@ -1,3 +1,4 @@
+import os.path
 from contextlib import asynccontextmanager
 from typing import Any, Dict, List
 
@@ -54,7 +55,10 @@ async def lifespan(app: FastAPI):
     :return:
     """
     print("Перед первым запуском необходимо убедиться в актуальности версии миграции")
-    run_alembic_command("cd ..; alembic upgrade head;alembic current")
+    if os.path.split(os.getcwd())[1] == "app":
+        run_alembic_command("cd ..; alembic upgrade head;alembic current")
+    elif os.path.split(os.getcwd())[1] == "kill_twitter":
+        run_alembic_command("alembic upgrade head;alembic current")
     # run_alembic_command(f'alembic current')
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

@@ -1,4 +1,5 @@
 import logging
+import os
 from random import randint
 from typing import AsyncGenerator
 
@@ -52,7 +53,11 @@ async def clean_database() -> None:
 
     Эта функция очищает таблицы в базе данных, чтобы обеспечить чистое состояние для тестов.
     """
-    run_alembic_command("cd ..; alembic -x db=test upgrade head;alembic -x db=test current")
+    if os.path.split(os.getcwd())[1] == "tests":
+        run_alembic_command("cd ..; alembic -x db=test upgrade head;alembic -x db=test current")
+    elif os.path.split(os.getcwd())[1] == "kill_twitter":
+        run_alembic_command("alembic -x db=test upgrade head;alembic -x db=test current")
+
     async with async_test_session() as session:
         # Пример для PostgreSQL
         await session.execute(text("TRUNCATE TABLE follows RESTART IDENTITY CASCADE;"))  # Пример для PostgreSQL
