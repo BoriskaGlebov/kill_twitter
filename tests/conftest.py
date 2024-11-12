@@ -12,6 +12,7 @@ from app.config import get_settings
 from app.database import async_test_session
 from app.dependencies import get_session
 from app.main import app
+from migrations_script import run_alembic_command
 
 # Настройка логирования
 logging.basicConfig(level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -51,6 +52,7 @@ async def clean_database() -> None:
 
     Эта функция очищает таблицы в базе данных, чтобы обеспечить чистое состояние для тестов.
     """
+    run_alembic_command("cd ..; alembic -x db=test upgrade head;alembic -x db=test current")
     async with async_test_session() as session:
         # Пример для PostgreSQL
         await session.execute(text("TRUNCATE TABLE follows RESTART IDENTITY CASCADE;"))  # Пример для PostgreSQL

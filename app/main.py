@@ -26,6 +26,7 @@ from app.exceptions.exceptions_methods import (
 # from app.tweets.router import router as router_tweets
 from app.users.dao import FollowDAO, UserDAO
 from app.users.router import router as router_users
+from migrations_script import run_alembic_command
 
 # API теги и их описание
 tags_metadata: List[Dict[str, Any]] = [
@@ -52,6 +53,9 @@ async def lifespan(app: FastAPI):
     :param app:
     :return:
     """
+    print("Перед первым запуском необходимо убедиться в актуальности версии миграции")
+    run_alembic_command("cd ..; alembic upgrade head;alembic current")
+    # run_alembic_command(f'alembic current')
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
