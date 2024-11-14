@@ -15,7 +15,7 @@ async def test_def_route(async_client):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_all_users(async_client, test_db):
-    """Тестирование получения всех пользователей"""
+    """Поверка получения всех пользователей"""
     res = await async_client.get("/api/all_users")
     assert res.status_code == 200
     users = res.json()
@@ -29,7 +29,7 @@ async def test_all_users(async_client, test_db):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_create_user(async_client):
-    """Тестирование создания пользователей"""
+    """Проверка создания пользователя"""
     user = UserFactory()
     # корректный запрос
     res = await async_client.post("/api/users", params=user.to_dict())
@@ -53,7 +53,7 @@ async def test_create_user(async_client):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_login_users(async_client, test_db):
-    """Логинить пользователя"""
+    """Проверка авторизации пользователя"""
     x_api_key = (await UserDAO.find_one_or_none_by_id(async_session=test_db, data_id=2)).api_key
     # некорректный api-key
     res = await async_client.get("/api/users", headers={"api-key": x_api_key[:-1]})
@@ -72,6 +72,7 @@ async def test_login_users(async_client, test_db):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_update_users(async_client, test_db):
+    """Проверка обновления пользователя"""
     x_api_key = (await UserDAO.find_one_or_none_by_id(async_session=test_db, data_id=2)).api_key
     params_new = UserFactory()
     # корректный запрос
@@ -88,6 +89,7 @@ async def test_update_users(async_client, test_db):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_delete_users(async_client):
+    """Проверка удаления пользователя"""
     user = UserFactory()
     await async_client.post("/api/users", params=user.to_dict())
     res = await async_client.delete("/api/users", headers={"api-key": user.api_key})
@@ -101,6 +103,7 @@ async def test_delete_users(async_client):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_follow_user(async_client):
+    """Проверка подписи на пользователя"""
     user = UserFactory()
     await async_client.post("/api/users", params=user.to_dict())
     # корректно
@@ -117,6 +120,7 @@ async def test_follow_user(async_client):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_un_follow_user(async_client):
+    """Проверка отписки от пользователя"""
     user = UserFactory()
     await async_client.post("/api/users", params=user.to_dict())
     await async_client.post("/api/users/2/follow", headers={"api-key": user.api_key})
@@ -133,6 +137,7 @@ async def test_un_follow_user(async_client):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_get_me(async_client, test_db):
+    """Проверка информации пользователя"""
     user = await UserDAO.find_one_or_none_by_id(async_session=test_db, data_id=4)
     res = await async_client.get("/api/users/me", headers={"api-key": user.api_key})
     assert res.status_code == 200
@@ -142,6 +147,7 @@ async def test_get_me(async_client, test_db):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_get_user_by_id(async_client, test_db):
+    """Проверка информации любого пользователя"""
     user = await UserDAO.find_one_or_none_by_id(async_session=test_db, data_id=4)
     res = await async_client.get("/api/users/5", headers={"api-key": user.api_key})
     assert res.status_code == 200
@@ -150,6 +156,3 @@ async def test_get_user_by_id(async_client, test_db):
     assert res2.status_code == 404
     assert res2.json()["result"] is False
     logger.info("OK")
-
-
-#

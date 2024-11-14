@@ -79,6 +79,7 @@ async def test_base_dao_add(test_db):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_base_dao_update(test_db):
+    """Проверка обновления пользователя и возможные ошибки"""
     test_user = UserFactory().to_dict()
     add_user = await UserDAO.add(async_session=test_db, **test_user)
     assert add_user.first_name == test_user["first_name"]
@@ -105,6 +106,7 @@ async def test_base_dao_update(test_db):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_base_dao_delete(test_db):
+    """Проверка удаления пользователя и возможные ошибки"""
     test_user = UserFactory()
     await UserDAO.add(async_session=test_db, **test_user.to_dict())
     del_user = await UserDAO.delete(async_session=test_db, first_name=test_user.first_name)
