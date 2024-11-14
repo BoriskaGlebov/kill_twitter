@@ -1,6 +1,8 @@
 import os.path
 import subprocess
 
+from app.config import logger
+
 alembic_path = os.path.join(os.path.dirname(__file__), "alembic.ini")
 alembic_path_in_main = os.path.join(os.path.dirname(__file__), "..", "alembic.ini")
 current_dir = os.path.split(os.path.dirname(__file__))
@@ -16,14 +18,14 @@ def run_alembic_command(command: str) -> None:
 
     result: subprocess.CompletedProcess[str] = subprocess.run(command, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
-        print(f"Ошибка при выполнении команды: {' '.join(command)}")
+        logger.error(f"Ошибка при выполнении команды: {' '.join(command)}")
         exit(result.returncode)
     if "test" in command:
-        print("Команды для Тестовой БД")
+        logger.info("Команды для Тестовой БД")
     else:
-        print("Команды для Основной БД")
-    print(f"Логи работы alembic\n{result.stderr.strip()}")
-    print(f"Стандартный вывод в консоль {result.stdout}\n")
+        logger.info("Команды для Основной БД")
+    logger.info(f"Логи работы alembic\n{result.stderr.strip()}")
+    logger.info(f"Стандартный вывод в консоль {result.stdout}\n")
 
 
 if __name__ == "__main__":

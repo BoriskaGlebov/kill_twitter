@@ -173,7 +173,7 @@ async def get_user_by_id(
     :return: Информация о пользователе или сообщение об ошибке.
     """
     res = await UserDAO.user_info(async_session=async_session_dep, user_id=id)
-    if res:
+    if res.get("result"):
         return RBMe(**res)
     else:
         raise HTTPException(status_code=404, detail="Нет такого пользователя")

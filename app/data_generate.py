@@ -35,8 +35,13 @@ class FollowsFactory(factory.Factory):
     def _create(cls, model_class, *args, **kwargs):
         """Создает экземпляр модели Follow с уникальными user_id и follower_id."""
         # Получаем все уникальные комбинации двух чисел от 1 до 20
-        unique_combinations = list(combinations(range(1, 100), 2))
+        max_users = kwargs.get("max_users")
+        # follower_id = kwargs.get('follower_id')
+        if max_users:
 
+            unique_combinations = list(combinations(range(1, max_users), 2))
+        else:
+            unique_combinations = list(combinations(range(1, 10), 2))
         # Случайным образом выбираем одну из комбинаций
         user_id, follower_id = sample(unique_combinations, 1)[0]
 
@@ -103,6 +108,7 @@ def generate_users(num: int) -> List[User]:
     :return: Список экземпляров User.
     """
     out_set: Set[str] = set()  # Множество для хранения уникальных комбинаций
+    out_set.add("test")
     out_instances: list[Any] = []
 
     while len(out_instances) < num:
@@ -128,7 +134,7 @@ def generate_follow(num: int) -> List[Follow]:
     out_instances: list[Any] = []
 
     while len(out_instances) < num:
-        out_instance = FollowsFactory()
+        out_instance = FollowsFactory(max_users=num + 1)
         combination = (out_instance.user_id, out_instance.follower_id)
 
         # Проверяем, есть ли такая комбинация уже в множестве
@@ -173,12 +179,5 @@ def generate_follow(num: int) -> List[Follow]:
 
 
 if __name__ == "__main__":
-    pass
-    # s = MediaFactory()
-    # print(s.to_dict())
-    # s = MediaFactory()
-    # print(s.to_dict())
-    # s = MediaFactory()
-    # print(s.to_dict())
-    # s = MediaFactory()
-    # print(s.to_dict())
+    res = generate_users(5)
+    print(len(res))

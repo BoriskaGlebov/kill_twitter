@@ -3,13 +3,14 @@ from unittest.mock import patch
 
 import pytest
 
-from app.config import get_settings
+from app.config import get_settings, logger
 
 
 def test_config(config):
     """Проверка правильности настроек для работы приложения локально"""
     assert config.get_test_db_url() == "postgresql+asyncpg://admin:password@localhost:5432/test_kill_twitter"
     assert config.get_db_url() == "postgresql+asyncpg://admin:password@localhost:5432/kill_twitter"
+    logger.info("ОК")
 
 
 def test_monkeypass(monkeypatch):
@@ -18,6 +19,7 @@ def test_monkeypass(monkeypatch):
     config = get_settings()
     assert config.get_test_db_url() == "postgresql+asyncpg://admin:password@db:5432/test_kill_twitter"
     assert config.get_db_url() == "postgresql+asyncpg://admin:password@db:5432/kill_twitter"
+    logger.info("ОК")
 
 
 # Тест на некорректные значения в .env
@@ -38,3 +40,4 @@ def test_invalid_settings():
     ):
         with pytest.raises(RuntimeError):
             get_settings()  # Вызов функции для получения настроек
+    logger.info("ОК")

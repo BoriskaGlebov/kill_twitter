@@ -35,17 +35,20 @@ class UserDAO(BaseDAO[User]):
             )
             result = await session.execute(query)
             all_users: Sequence[User] = result.scalars().all()
+            if all_users:
 
-            for user in all_users:
-                if user.api_key == api_key or user.id == user_id:
-                    out["user"] = {k: v for k, v in user.to_dict().items() if k in out_keys}
-                    out["user"]["followers"] = [
-                        {k: v for k, v in user_f.to_dict().items() if k in out_keys} for user_f in user.followers_users
-                    ]
-                    out["user"]["following"] = [
-                        {k: v for k, v in user_f.to_dict().items() if k in out_keys} for user_f in user.following_users
-                    ]
-                    break
+                for user in all_users:
+                    if user.api_key == api_key or user.id == user_id:
+                        out["user"] = {k: v for k, v in user.to_dict().items() if k in out_keys}
+                        out["user"]["followers"] = [
+                            {k: v for k, v in user_f.to_dict().items() if k in out_keys}
+                            for user_f in user.followers_users
+                        ]
+                        out["user"]["following"] = [
+                            {k: v for k, v in user_f.to_dict().items() if k in out_keys}
+                            for user_f in user.following_users
+                        ]
+                        break
 
             if out.get("user"):
                 return out

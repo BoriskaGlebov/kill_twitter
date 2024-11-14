@@ -31,16 +31,19 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 # API_KEY = "test"  # Замените на ваш реальный ключ
-api_key_header = APIKeyHeader(name="api-key")
+api_key_header = APIKeyHeader(name="api-key", auto_error=False)
 
 
 # Зависимость для проверки API-ключа
 async def verify_api_key(async_session_dep=Depends(get_session), api_key: str = Depends(api_key_header)):
-    res = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
-    if res:
-        return api_key
+    if api_key:
+        res = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
+        if res:
+            return api_key
+        else:
+            raise HTTPException(status_code=403, detail="Такого токена не существует, введите корректный токен")
     else:
-        raise HTTPException(status_code=403, detail="Такого токена не существует, введите корректный токен")
+        raise HTTPException(status_code=403, detail="Не указан токен в заголовке")
 
 
 async def main():
