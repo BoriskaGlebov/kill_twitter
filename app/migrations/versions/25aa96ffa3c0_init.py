@@ -1,8 +1,8 @@
-"""add User,Follow
+"""INIT
 
-Revision ID: ee66bf5e125a
-Revises: fabd68a7b998
-Create Date: 2024-11-11 17:11:55.503043
+Revision ID: 25aa96ffa3c0
+Revises:
+Create Date: 2024-11-18 22:18:25.207548
 
 """
 
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "ee66bf5e125a"
-down_revision: Union[str, None] = "fabd68a7b998"
+revision: str = "25aa96ffa3c0"
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

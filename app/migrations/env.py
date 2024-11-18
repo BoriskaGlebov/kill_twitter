@@ -13,8 +13,6 @@ from app.database import DATABASE_URL, TEST_DATABASE_URL, Base
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
 
-# from app.tweets.models import Tweet
-# from app.medias.models import Media
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

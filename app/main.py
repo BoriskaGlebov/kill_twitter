@@ -12,7 +12,14 @@ from sqlalchemy.exc import IntegrityError
 from starlette.responses import HTMLResponse
 
 from app.config import settings
-from app.data_generate import generate_follow, generate_users
+from app.data_generate import (
+    MediaFactory,
+    TweetFactory,
+    generate_follow,
+    generate_likes,
+    generate_tweet_media,
+    generate_users,
+)
 from app.database import Base, engine
 from app.dependencies import get_session
 from app.exceptions.exceptions_methods import (
@@ -20,11 +27,10 @@ from app.exceptions.exceptions_methods import (
     integrity_error_exception_handler,
     validation_exception_handler,
 )
-
-# from app.medias.router import router as router_medias
-# from app.medias.dao import MediaDAO
-# from app.tweets.dao import TweetDAO, LikeDAO, TweetMediaDAO
-# from app.tweets.router import router as router_tweets
+from app.medias.dao import MediaDAO
+from app.medias.router import router as router_medias
+from app.tweets.dao import LikeDAO, TweetDAO, TweetMediaDAO
+from app.tweets.router import router as router_tweets
 from app.users.dao import FollowDAO, UserDAO
 from app.users.router import router as router_users
 from migrations_script import run_alembic_command
@@ -59,7 +65,6 @@ async def lifespan(app: FastAPI):
         run_alembic_command("cd ..; alembic upgrade head;alembic current")
     elif os.path.split(os.getcwd())[1] == "kill_twitter":
         run_alembic_command("alembic upgrade head;alembic current")
-    # run_alembic_command(f'alembic current')
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
@@ -68,30 +73,11 @@ async def lifespan(app: FastAPI):
         await UserDAO.add(session, **{"first_name": "Test_name", "last_name": "Test_surname", "api_key": "test"})
         [await UserDAO.add(session, **user.to_dict()) for user in generate_users(100)]
         [await FollowDAO.add(session, **follow.to_dict()) for follow in generate_follow(100)]
+        [await MediaDAO.add(session, **MediaFactory().to_dict()) for _ in range(1, 21)]
+        [await TweetDAO.add(session, **TweetFactory().to_dict()) for _ in range(100)]
+        [await LikeDAO.add(session, **like.to_dict()) for like in generate_likes(100)]
+        [await TweetMediaDAO.add(session, **inst.to_dict()) for inst in generate_tweet_media(100)]
     yield
-
-    # async for session in get_session():
-    #     async def add_user(user_data):
-    #         async with get_session() as session:
-    #             return await UserDAO.add(session, **user_data.to_dict())
-    #
-    #     async def add_follow(follow_data):
-    #         async with get_session() as session:
-    #             return await FollowDAO.add(session, **follow_data.to_dict())
-    #     # Параллельное добавление пользователей и подписок с использованием отдельных сессий
-    #     users = await asyncio.gather(*(add_user(user) for user in generate_users(100)))
-    #     follows = await asyncio.gather(*(add_follow(follow) for follow in generate_follow(100)))
-    #     test_user = await UserDAO.add(session, **{'first_name': "Test_name",
-    #                                               "last_name": "Test_surname",
-    #                                               "api_key": "test"})
-    # users = await asyncio.gather(*(UserDAO.add(session, **user.to_dict()) for user in generate_users(100)))
-    # follows = await asyncio.gather(*(FollowDAO.add(session, **follow.to_dict()) for follow in generate_follow(100)))
-    # #         # tweets = [await TweetDAO.add(session, **TweetFactory().to_dict()) for _ in range(100)]
-    # #         # likes = [await LikeDAO.add(session, **like.to_dict()) for like in generate_likes(100)]
-    # #         # medias = [await MediaDAO.add(session, **MediaFactory().to_dict()) for _ in range(1, 21)]
-    # #         # tweet_media = [await TweetMediaDAO.add(session, **inst.to_dict()) for inst in generate_tweet_media(100)]
-    # #     # Инициализация базы данных при старте приложения
-    yield  # Здесь можно добавить код для завершения работы приложения (если нужно)
 
 
 app = FastAPI(
@@ -149,8 +135,8 @@ app = FastAPI(
 )
 
 app.include_router(router_users)
-# app.include_router(router_tweets)
-# app.include_router(router_medias)
+app.include_router(router_tweets)
+app.include_router(router_medias)
 
 # Mount the Prometheus metrics endpoint
 instrumentator = Instrumentator().instrument(app).expose(app)
@@ -168,17 +154,6 @@ app.add_exception_handler(RequestValidationError, validation_exception_handler) 
 @app.get("/", response_class=HTMLResponse)
 async def hello_world(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
-
-
-#
-# @app.get('/test')
-# async def get_test(id: int):
-#     try:
-#         result = 1 / id
-#     except ZeroDivisionError as e:
-#         print(e)
-#         raise HTTPException(status_code=400, detail=e)
-#     return {"result": result}
 
 
 if __name__ == "__main__":

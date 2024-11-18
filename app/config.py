@@ -24,8 +24,8 @@ logger.add(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "file.log"),
     level="ERROR",
     format="{time:YYYY-MM-DD HH:mm:ss} - {level} - {name}:{line} - {function} - {message} {extra[user]}",
-    rotation="500 MB",
-    retention="10 days",
+    rotation="1 day",
+    retention="7 days",
     backtrace=True,
     diagnose=True,
 )

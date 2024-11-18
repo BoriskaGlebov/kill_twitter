@@ -1,16 +1,16 @@
-"""init
+"""add all tabs
 
-Revision ID: fabd68a7b998
-Revises:
-Create Date: 2024-11-11 17:11:19.318618
+Revision ID: 9db2de9b5581
+Revises: 3fbcb37f5dd5
+Create Date: 2024-11-18 22:24:50.593312
 
 """
 
 from typing import Sequence, Union
 
 # revision identifiers, used by Alembic.
-revision: str = "fabd68a7b998"
-down_revision: Union[str, None] = None
+revision: str = "9db2de9b5581"
+down_revision: Union[str, None] = "3fbcb37f5dd5"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
