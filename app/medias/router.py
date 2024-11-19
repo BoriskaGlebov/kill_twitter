@@ -2,7 +2,7 @@ import os.path
 import shutil
 import uuid
 
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
 from app.config import settings
 from app.dependencies import get_session, verify_api_key
@@ -26,12 +26,19 @@ async def upload_image(
     :return: Ответ с уникальным идентификатором загруженного медиафайла.
     :raises: Вызывается при ошибках в процессе загрузки или сохранения файла.
     """
-
-    new_file_name = f"{uuid.uuid4()}_{os.path.splitext(file.filename)[0]}.jpg"
+    if file.filename:
+        new_file_name = f"{uuid.uuid4()}_{os.path.splitext(file.filename)[0]}.jpg"
+    else:
+        raise HTTPException(status_code=500, detail="Не нашел файл для загрузки")
     file_location = os.path.join(settings.UPLOAD_DIRECTORY, new_file_name)
     file_save_path = os.path.join(settings.static_path(), "images", new_file_name)
-    with open(file_save_path, "wb") as file_object:
-        shutil.copyfileobj(file.file, file_object)
-    res: Media = await MediaDAO.add(async_session=async_session_dep, **{"media_data": file_location})
-    if res:
-        return RBMedia(media_id=res.id)
+    try:
+        with open(file_save_path, "wb") as file_object:
+            shutil.copyfileobj(file.file, file_object)
+        res: Media = await MediaDAO.add(async_session=async_session_dep, **{"media_data": file_location})
+        if res:
+            return RBMedia(media_id=res.id)
+        else:
+            raise HTTPException(status_code=500, detail="Не удалось сохранить медиафайл.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

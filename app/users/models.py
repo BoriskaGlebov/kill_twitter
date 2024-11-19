@@ -3,7 +3,6 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base, int_pk, str_uniq
-from app.tweets.models import Tweet
 
 
 class Follow(Base):
@@ -68,7 +67,7 @@ class User(Base):
     # На кого подписан я
     following: Mapped[list[Follow]] = relationship("Follow", foreign_keys="Follow.user_id", back_populates="user")
 
-    tweets: Mapped[list["Tweet"]] = relationship("Tweet", back_populates="user")
+    tweets: Mapped[list["Tweet"]] = relationship("Tweet", back_populates="user")  # flake8: noqa F821
 
     def __str__(self):
         """Возвращает строковое представление объекта User."""

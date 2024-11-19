@@ -8,10 +8,11 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings, logger
-from app.data_generate import generate_follow, generate_users
+from app.data_generate import MediaFactory, generate_follow, generate_users
 from app.database import Base, async_test_session, test_engine
 from app.dependencies import get_session
 from app.main import app
+from app.medias.dao import MediaDAO
 from app.users.dao import FollowDAO, UserDAO
 from migrations_script import run_alembic_command
 
@@ -63,7 +64,7 @@ async def clean_database() -> None:
         # Пример для PostgreSQL
         await session.execute(text("TRUNCATE TABLE follows RESTART IDENTITY CASCADE;"))  # Пример для PostgreSQL
         # await session.execute(text("TRUNCATE TABLE likes RESTART IDENTITY CASCADE;"))
-        # await session.execute(text("TRUNCATE TABLE medias RESTART IDENTITY CASCADE;"))
+        await session.execute(text("TRUNCATE TABLE medias RESTART IDENTITY CASCADE;"))
         # await session.execute(text("TRUNCATE TABLE tweetmedias RESTART IDENTITY CASCADE;"))
         # await session.execute(text("TRUNCATE TABLE tweets RESTART IDENTITY CASCADE;"))
         await session.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE;"))
@@ -86,6 +87,7 @@ async def test_db(async_client):
         follows = generate_follow(10)
         [await UserDAO.add(async_session=session, **user.to_dict()) for user in users]
         [await FollowDAO.add(async_session=session, **follow.to_dict()) for follow in follows]
+        [await MediaDAO.add(session, **MediaFactory().to_dict()) for _ in range(1, 21)]
         yield session  # Возвращаем сессию для использования в тестах
 
 

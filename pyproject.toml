@@ -24,6 +24,7 @@ remove-unused-variables = true
 max-line-length = 120  # Установите желаемую максимальную длину строки
 ignore = ["E203", "E266", "E501"]  # Игнорируйте определенные ошибки
 exclude = ".venv,__pycache__,build,dist"
+builtins = ["Tweet"]
 
 [tool.mypy]
 plugins = ["pydantic.mypy"]

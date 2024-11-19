@@ -19,8 +19,8 @@ async def test_all_users(async_client, test_db):
     res = await async_client.get("/api/all_users")
     assert res.status_code == 200
     users = res.json()
-    assert len(users) == 10
     users_db = await UserDAO.find_all(async_session=test_db)
+    assert len(users) == len(users_db)
     for num, user in enumerate(users):
         assert user["api_key"] == users_db[num].api_key
         logger.info("OK", user=user["first_name"])
