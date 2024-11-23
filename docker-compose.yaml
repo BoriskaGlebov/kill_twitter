@@ -41,10 +41,63 @@ services:
       - monitoring_net
 
 
+  kill_twitter:
+      build:
+        context: .
+        dockerfile: Dockerfile  # Указываем путь к Dockerfile
+      depends_on:
+        - db
+      restart: always
+      environment:
+        ENV: docker
+      ports:
+        - "8000:8000"  # Пробрасываем порт 80 контейнера на порт 80 хоста
+      networks:
+        - monitoring_net
+      deploy:
+        resources:
+          limits:
+            cpus: '1.5'
+            memory: 512M
+          reservations:
+            memory: 256M
+      volumes:
+        - static_files1:/python_advanced_diploma/app/static
+        - static_files2:/python_advanced_diploma/app/templates
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_static
+    ports:
+      - "81:81"  # Проброс порта для доступа к Nginx
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf  # Ваш файл конфигурации Nginx
+      - static_files1:/usr/src/app/static # Подключение статических файлов
+      - static_files2:/usr/src/app/templates  # Подключение шаблонов Jinja2
+    #      - ./nginx.conf:/etc/nginx/nginx.conf  # Ваш файл конфигурации Nginx
+    depends_on:
+      - kill_twitter
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    networks:
+      - monitoring_net
+#
+
 volumes:
   pg_data:
     name: diploma_db
+  static_files1:
+    name: static_files1
+  static_files2:
+    name: static_files2
 
 networks:
   monitoring_net:
     name: monitoring_net
+#    external: true
