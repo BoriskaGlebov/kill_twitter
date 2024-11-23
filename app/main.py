@@ -11,7 +11,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from sqlalchemy.exc import IntegrityError
 from starlette.responses import HTMLResponse
 
-from app.config import settings
+from app.config import logger, settings
 from app.data_generate import (
     MediaFactory,
     TweetFactory,
@@ -60,7 +60,7 @@ async def lifespan(app: FastAPI):
     :param app:
     :return:
     """
-    print("Перед первым запуском необходимо убедиться в актуальности версии миграции")
+    logger.info("Перед первым запуском необходимо убедиться в актуальности версии миграции")
     if os.path.split(os.getcwd())[1] == "app":
         run_alembic_command("cd ..; alembic upgrade head;alembic current")
     elif os.path.split(os.getcwd())[1] == "kill_twitter":

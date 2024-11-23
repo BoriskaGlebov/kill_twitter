@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Union
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import logger
 from app.dependencies import get_session, verify_api_key
 from app.users.dao import FollowDAO, UserDAO
 from app.users.models import User
@@ -36,6 +37,7 @@ async def create_user(
     :return: Созданный пользователь с токеном.
     """
     res = await UserDAO.add(async_session=async_session_dep, **request_body.model_dump())
+    logger.info("Создал пользователя ", **{"user": request_body.first_name})
     return SUserAdd(**res.to_dict())
 
 
@@ -137,6 +139,7 @@ async def un_follow_user(
     if res:
         return RBCorrect()
     else:
+        logger.error("Не нашел пользователя с таким api_key", **{"user": api_key})
         return RBUncorrect()
 
 

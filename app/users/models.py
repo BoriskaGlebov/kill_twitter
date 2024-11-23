@@ -66,8 +66,7 @@ class User(Base):
     # Связь с подписчиками кто подписан на пользователя
     # На кого подписан я
     following: Mapped[list[Follow]] = relationship("Follow", foreign_keys="Follow.user_id", back_populates="user")
-
-    tweets: Mapped[list["Tweet"]] = relationship("Tweet", back_populates="user")  # flake8: noqa F821
+    tweets: Mapped[list["Tweet"]] = relationship("Tweet", back_populates="user")  # type: ignore # flake8: noqa F821
 
     def __str__(self):
         """Возвращает строковое представление объекта User."""

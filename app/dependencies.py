@@ -7,6 +7,7 @@ from fastapi.security import APIKeyHeader
 # from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import logger
 from app.database import async_session
 from app.users.dao import UserDAO
 
@@ -41,8 +42,10 @@ async def verify_api_key(async_session_dep=Depends(get_session), api_key: str = 
         if res:
             return api_key
         else:
+            logger.error("Не нашел пользователя с таким api_key", **{"user": api_key})
             raise HTTPException(status_code=403, detail="Такого токена не существует, введите корректный токен")
     else:
+        logger.error("Не указан токен в заголовке")
         raise HTTPException(status_code=403, detail="Не указан токен в заголовке")
 
 
