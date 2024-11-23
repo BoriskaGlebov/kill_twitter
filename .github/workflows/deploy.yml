@@ -21,7 +21,7 @@ jobs:
     - name: Deploy to server
       run: |
         ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-          cd /var/www/your_app || exit  # Переход в директорию приложения
+          cd app/ || exit  # Переход в директорию приложения
           git pull origin main            # Обновление кода из репозитория
           docker-compose down              # Остановка текущих контейнеров (если они запущены)
           docker-compose up -d             # Запуск контейнеров в фоновом режиме
