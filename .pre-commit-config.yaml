@@ -27,8 +27,10 @@ repos:
     rev: 7.1.1  # Use the latest stable version
     hooks:
       - id: flake8
-        additional_dependencies: [ flake8-pyproject ]  # Добавьте этот плагин для поддержки pyproject.toml
-  #
+        additional_dependencies:
+          - flake8-pyproject  # Добавьте этот плагин для поддержки pyproject.toml
+          - flake8-docstrings  # Добавьте этот плагин для проверки docstring
+#        [ flake8-pyproject ]  # Добавьте этот плагин для поддержки pyproject.toml
   - repo: https://github.com/PyCQA/autoflake
     rev: v2.3.1
     hooks:

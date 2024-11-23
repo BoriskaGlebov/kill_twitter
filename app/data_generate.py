@@ -164,7 +164,7 @@ def generate_likes(num: int) -> List[Like]:
     :return: Список экземпляров Like.
     """
     out_set = set()  # Множество для хранения уникальных комбинаций
-    out_instances = []
+    out_instances: list[Any] = []
 
     while len(out_instances) < num:
         out_instance = LikeFactory()
@@ -186,7 +186,7 @@ def generate_tweet_media(num: int) -> List[TweetMedia]:
     :return: Список экземпляров Follow.
     """
     out_set = set()  # Множество для хранения уникальных комбинаций
-    out_instances = []
+    out_instances: list[Any] = []
 
     while len(out_instances) < num:
         out_instance = TweetMediaFactory()

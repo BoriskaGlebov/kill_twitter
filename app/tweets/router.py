@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_session, verify_api_key
@@ -27,7 +29,9 @@ async def add_tweet(
     :return: Результат операции с идентификатором нового твита.
     :rtype: RBTweet
     """
-    user_id: User = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
+    user_id: User | None = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
+    if user_id is None:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
     tweet_dict = tweet_data.model_dump()
     tweet_dict["user_id"] = user_id.id
     media_ids = []
@@ -59,7 +63,7 @@ async def delete_tweet(
     :return: Результат операции удаления.
     :rtype: RBCorrect | RBUncorrect
     """
-    tweet = await TweetDAO.delete(async_session=async_session_dep, **{"id": id})
+    tweet = await TweetDAO.delete(async_session=async_session_dep, id=id)
     if tweet:
         return RBCorrect()
     else:
@@ -81,8 +85,9 @@ async def like_tweet(
     :return: Результат операции лайка.
     :rtype: RBCorrect | RBUncorrect
     """
-    user_id: User = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
-
+    user_id: User | None = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
+    if user_id is None:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
     tweet: Like = await LikeDAO.add(
         async_session=async_session_dep, **{"user_id": user_id.id, "tweet_id": id, "like": True}
     )
@@ -107,9 +112,10 @@ async def rollback_like_tweet(
     :return: Результат операции удаления лайка.
     :rtype: RBCorrect | RBUncorrect
     """
-    user_id: User = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
-
-    tweet: int = await LikeDAO.delete(async_session=async_session_dep, **{"user_id": user_id.id, "tweet_id": id})
+    user_id: User | None = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
+    if user_id is None:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+    tweet: int = await LikeDAO.delete(async_session=async_session_dep, user_id=user_id.id, tweet_id=id)
     if tweet:
         return RBCorrect()
     else:
@@ -119,7 +125,7 @@ async def rollback_like_tweet(
 @router.get("/tweets", summary="Получить ленту с твитами")
 async def get_user_tweets(
     async_session_dep: AsyncSession = Depends(get_session), api_key: str = Depends(verify_api_key)
-) -> dict:
+) -> dict[Any, Any]:
     """
     Получает ленту твитов.
 
@@ -131,6 +137,8 @@ async def get_user_tweets(
     """
     out = {"result": True, "tweets": []}
     tweets = await TweetDAO.find_all(async_session=async_session_dep)
+    if tweets is None:
+        tweets = []  # Если нет твитов, присваиваем пустой список
     ra = sorted(tweets, key=lambda o: len(o.likes), reverse=True)
     # print(user)
     for tweet in ra:
@@ -143,12 +151,12 @@ async def get_user_tweets(
         }
 
         for like in tweet.likes:
-            likes_info = {
-                "user_id": like.user_id,
-                "name": (
-                    await UserDAO.find_one_or_none(async_session=async_session_dep, **{"id": like.user_id})
-                ).first_name,
-            }
-            tweet_info["likes"].append(likes_info)
+            user = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"id": like.user_id})
+            if user is not None:
+                likes_info = {
+                    "user_id": like.user_id,
+                    "name": user.first_name,
+                }
+                tweet_info["likes"].append(likes_info)
         out["tweets"].append(tweet_info)
     return out

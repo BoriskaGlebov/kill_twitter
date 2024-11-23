@@ -1,6 +1,6 @@
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, List, Optional, Type
 
-from sqlalchemy import Sequence, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -18,7 +18,9 @@ class TweetDAO(BaseDAO[Tweet]):
     model: Type[Tweet] = Tweet
 
     @classmethod
-    async def find_all(cls, async_session: AsyncSession, **filter_by: Optional[Dict[str, Any]]) -> Sequence[Tweet]:
+    async def find_all(
+        cls, async_session: AsyncSession, **filter_by: Optional[Dict[str, Any]]
+    ) -> Optional[List[Tweet]]:
         """
         Получить все твиты с возможностью фильтрации.
 
@@ -33,7 +35,7 @@ class TweetDAO(BaseDAO[Tweet]):
             )
             res = await session.execute(query)
             tweets = res.unique().scalars().all()
-            return tweets
+            return list(tweets) if tweets else None  # Возвращаем None, если твиты не найдены
 
 
 class TweetMediaDAO(BaseDAO[TweetMedia]):
