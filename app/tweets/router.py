@@ -14,7 +14,7 @@ from app.users.models import User
 router = APIRouter(prefix="/api", tags=["tweets"])
 
 
-@router.post("/tweets", summary="Добавить твит", response_model=RBTweet)
+@router.post("/tweets", status_code=201, summary="Добавить твит", response_model=RBTweet)
 async def add_tweet(
     tweet_data: STweet, async_session_dep: AsyncSession = Depends(get_session), api_key: str = Depends(verify_api_key)
 ) -> RBTweet:
@@ -63,9 +63,12 @@ async def delete_tweet(
     :return: Результат операции удаления.
     :rtype: RBCorrect | RBUncorrect
     """
-    tweet = await TweetDAO.delete(async_session=async_session_dep, id=id)
-    if tweet:
-        return RBCorrect()
+    user = await UserDAO.find_one_or_none(async_session=async_session_dep, api_key=api_key)
+    check_tweet = await TweetDAO.find_one_or_none_by_id(async_session=async_session_dep, data_id=id)
+    if check_tweet and check_tweet.user_id == user.id:
+        tweet = await TweetDAO.delete(async_session=async_session_dep, id=id)
+        if tweet:
+            return RBCorrect()
     else:
         return RBUncorrect()
 

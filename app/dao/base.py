@@ -46,7 +46,7 @@ class BaseDAO(Generic[M]):
         async with async_session as session:
             query = select(cls.model).filter_by(id=data_id)
             result = await session.execute(query)
-            return result.scalar_one_or_none()
+            return result.unique().scalar_one_or_none()
 
     @classmethod
     async def find_one_or_none(cls, async_session: AsyncSession, **filter_by) -> M | None:
