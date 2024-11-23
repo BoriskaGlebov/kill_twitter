@@ -65,12 +65,11 @@ async def delete_tweet(
     """
     user = await UserDAO.find_one_or_none(async_session=async_session_dep, api_key=api_key)
     check_tweet = await TweetDAO.find_one_or_none_by_id(async_session=async_session_dep, data_id=id)
-    if check_tweet and check_tweet.user_id == user.id:
+    if check_tweet and user and check_tweet.user_id == user.id:
         tweet = await TweetDAO.delete(async_session=async_session_dep, id=id)
         if tweet:
             return RBCorrect()
-    else:
-        return RBUncorrect()
+    return RBUncorrect()
 
 
 @router.post("/tweets/{id}/likes", summary="Поставить лайк на твит", response_model=RBCorrect | RBUncorrect)
