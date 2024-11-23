@@ -157,6 +157,6 @@ async def get_user_tweets(
                     "user_id": like.user_id,
                     "name": user.first_name,
                 }
-                tweet_info["likes"].append(likes_info)
-        out["tweets"].append(tweet_info)
+                tweet_info["likes"].append(likes_info)  # type: ignore
+        out["tweets"].append(tweet_info)  # type: ignore
     return out
