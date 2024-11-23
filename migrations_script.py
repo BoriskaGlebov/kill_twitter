@@ -25,7 +25,7 @@ def run_alembic_command(command: str) -> None:
     else:
         logger.info("Команды для Основной БД")
     logger.info(f"Логи работы alembic\n{result.stderr.strip()}")
-    logger.info(f"Стандартный вывод в консоль {result.stdout}\n")
+    logger.info(f"Стандартный вывод в консоль {result.stdout}\n".strip())
 
 
 if __name__ == "__main__":

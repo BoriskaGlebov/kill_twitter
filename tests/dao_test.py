@@ -25,7 +25,7 @@ async def test_base_dao_find_one_or_none_by_id(test_db, data_id, expected):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_base_dao_find_one_or_none_by_id_none(test_db):
-    """Проверка получения пользователя по id,но вернет NONE"""
+    """Проверка получения пользователя по id, но вернет NONE"""
     res = await UserDAO.find_one_or_none_by_id(async_session=test_db, data_id=0)
     assert res is None
     logger.info("ОК")

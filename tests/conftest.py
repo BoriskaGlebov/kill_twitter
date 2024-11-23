@@ -75,7 +75,7 @@ async def clean_database() -> None:
 
 @pytest.fixture(scope="session")
 async def test_db(async_client):
-    """аасинхронную сессию возвращает"""
+    """Асинхронную сессию возвращает"""
     engine = test_engine  # Используем in-memory SQLite базу данных
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)  # Создаем таблицы
