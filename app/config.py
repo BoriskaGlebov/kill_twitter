@@ -117,7 +117,3 @@ try:
     settings = get_settings()
 except RuntimeError as e:
     print(e)
-
-if __name__ == "__main__":
-
-    logger.info("asdad", **{"user": "asdaddasdadada"})

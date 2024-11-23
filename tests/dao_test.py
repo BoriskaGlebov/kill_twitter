@@ -10,7 +10,7 @@ from app.users.dao import UserDAO
 async def test_base_dao_find_all(test_db):
     """Проверка получения всех пользователей."""
     res = await UserDAO.find_all(async_session=test_db)
-    assert len(res) == 10
+    assert len(res) == 101
     logger.info("ОК")
 
 
@@ -42,12 +42,12 @@ async def test_base_dao_find_one_or_none(test_db):
     for num, el in enumerate(all_users):
         if el.id % 2:
             res = await UserDAO.find_one_or_none(async_session=test_db, **{"id": el.id})
-        elif el.id % 5 == 0:
-            res = await UserDAO.find_one_or_none(async_session=test_db, **{"first_name": el.first_name})
-        elif el.id % 3 == 0:
-            res = await UserDAO.find_one_or_none(async_session=test_db, **{"api_key": el.api_key})
+        # elif el.id % 5 == 0:
+        #     res = await UserDAO.find_one_or_none(async_session=test_db, **{"first_name": el.first_name})
         else:
-            res = await UserDAO.find_one_or_none(async_session=test_db, **{"last_name": el.last_name})
+            res = await UserDAO.find_one_or_none(async_session=test_db, **{"api_key": el.api_key})
+        # else:
+        #     res = await UserDAO.find_one_or_none(async_session=test_db, **{"last_name": el.last_name})
 
         assert res.id == num + 1
     logger.info("ОК")
@@ -72,7 +72,7 @@ async def test_base_dao_add(test_db):
         bad_user = UserFactory().to_dict()
         bad_user["api_key"] = test_user.api_key
         await UserDAO.add(async_session=test_db, **bad_user)
-    del_user = await UserDAO.delete(async_session=test_db, first_name=test_user.first_name)
+    del_user = await UserDAO.delete(async_session=test_db, api_key=add_user.api_key)
     assert del_user == 1
     logger.info("ОК")
 
@@ -109,7 +109,7 @@ async def test_base_dao_delete(test_db):
     """Проверка удаления пользователя и возможные ошибки."""
     test_user = UserFactory()
     await UserDAO.add(async_session=test_db, **test_user.to_dict())
-    del_user = await UserDAO.delete(async_session=test_db, first_name=test_user.first_name)
+    del_user = await UserDAO.delete(async_session=test_db, api_key=test_user.api_key)
     assert del_user == 1
     logger.info("ОК")
     # del_user = await UserDAO.delete(async_session=test_db, delete_all=True)

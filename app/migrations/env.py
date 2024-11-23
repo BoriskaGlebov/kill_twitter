@@ -9,6 +9,9 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.database import DATABASE_URL, TEST_DATABASE_URL, Base
+from app.medias.models import Media
+from app.tweets.models import Like, Tweet, TweetMedia
+from app.users.models import Follow, User
 
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 

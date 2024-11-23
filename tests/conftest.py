@@ -8,11 +8,19 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings, logger
-from app.data_generate import MediaFactory, generate_follow, generate_users
+from app.data_generate import (
+    MediaFactory,
+    TweetFactory,
+    generate_follow,
+    generate_likes,
+    generate_tweet_media,
+    generate_users,
+)
 from app.database import Base, async_test_session, test_engine
 from app.dependencies import get_session
 from app.main import app
 from app.medias.dao import MediaDAO
+from app.tweets.dao import LikeDAO, TweetDAO, TweetMediaDAO
 from app.users.dao import FollowDAO, UserDAO
 from migrations_script import run_alembic_command
 
@@ -62,11 +70,11 @@ async def clean_database() -> None:
 
     async with async_test_session() as session:
         # Пример для PostgreSQL
-        await session.execute(text("TRUNCATE TABLE follows RESTART IDENTITY CASCADE;"))  # Пример для PostgreSQL
-        # await session.execute(text("TRUNCATE TABLE likes RESTART IDENTITY CASCADE;"))
+        await session.execute(text("TRUNCATE TABLE follows RESTART IDENTITY CASCADE;"))
+        await session.execute(text("TRUNCATE TABLE likes RESTART IDENTITY CASCADE;"))
         await session.execute(text("TRUNCATE TABLE medias RESTART IDENTITY CASCADE;"))
-        # await session.execute(text("TRUNCATE TABLE tweetmedias RESTART IDENTITY CASCADE;"))
-        # await session.execute(text("TRUNCATE TABLE tweets RESTART IDENTITY CASCADE;"))
+        await session.execute(text("TRUNCATE TABLE tweetmedias RESTART IDENTITY CASCADE;"))
+        await session.execute(text("TRUNCATE TABLE tweets RESTART IDENTITY CASCADE;"))
         await session.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE;"))
         await session.commit()
     #
@@ -83,11 +91,15 @@ async def test_db(async_client):
     sessionlocal = async_test_session
 
     async with sessionlocal() as session:
-        users = generate_users(10)
-        follows = generate_follow(10)
-        [await UserDAO.add(async_session=session, **user.to_dict()) for user in users]
-        [await FollowDAO.add(async_session=session, **follow.to_dict()) for follow in follows]
+        generate_users(10)
+        generate_follow(10)
+        await UserDAO.add(session, **{"first_name": "Test_name", "last_name": "Test_surname", "api_key": "test"})
+        [await UserDAO.add(session, **user.to_dict()) for user in generate_users(100)]
+        [await FollowDAO.add(session, **follow.to_dict()) for follow in generate_follow(100)]
         [await MediaDAO.add(session, **MediaFactory().to_dict()) for _ in range(1, 21)]
+        [await TweetDAO.add(session, **TweetFactory().to_dict()) for _ in range(100)]
+        [await LikeDAO.add(session, **like.to_dict()) for like in generate_likes(100)]
+        [await TweetMediaDAO.add(session, **inst.to_dict()) for inst in generate_tweet_media(100)]
         yield session  # Возвращаем сессию для использования в тестах
 
 

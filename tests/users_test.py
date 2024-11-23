@@ -73,7 +73,7 @@ async def test_login_users(async_client, test_db):
 @pytest.mark.asyncio(loop_scope="session")
 async def test_update_users(async_client, test_db):
     """Проверка обновления пользователя."""
-    x_api_key = (await UserDAO.find_one_or_none_by_id(async_session=test_db, data_id=2)).api_key
+    x_api_key = (await UserDAO.find_one_or_none_by_id(async_session=test_db, data_id=5)).api_key
     params_new = UserFactory()
     # корректный запрос
     res = await async_client.put("/api/users", headers={"api-key": x_api_key}, params=params_new.to_dict())
@@ -107,11 +107,11 @@ async def test_follow_user(async_client):
     user = UserFactory()
     await async_client.post("/api/users", params=user.to_dict())
     # корректно
-    res = await async_client.post("/api/users/3/follow", headers={"api-key": user.api_key})
+    res = await async_client.post("/api/users/5/follow", headers={"api-key": user.api_key})
     assert res.status_code == 201
     assert res.json() == {"result": True}
     # #повтор
-    res2 = await async_client.post("/api/users/3/follow", headers={"api-key": user.api_key})
+    res2 = await async_client.post("/api/users/5/follow", headers={"api-key": user.api_key})
     assert res2.status_code == 409
     assert res2.json()["result"] is False
     await async_client.delete("/api/users", headers={"api-key": user.api_key})
@@ -123,12 +123,12 @@ async def test_un_follow_user(async_client):
     """Проверка отписки от пользователя."""
     user = UserFactory()
     await async_client.post("/api/users", params=user.to_dict())
-    await async_client.post("/api/users/2/follow", headers={"api-key": user.api_key})
+    await async_client.post("/api/users/5/follow", headers={"api-key": user.api_key})
     # корректно
-    res = await async_client.delete("/api/users/2/follow", headers={"api-key": user.api_key})
+    res = await async_client.delete("/api/users/5/follow", headers={"api-key": user.api_key})
     assert res.status_code == 200
     assert res.json() == {"result": True}
-    res = await async_client.delete("/api/users/2/follow", headers={"api-key": user.api_key})
+    res = await async_client.delete("/api/users/5/follow", headers={"api-key": user.api_key})
     assert res.status_code == 200
     assert res.json() == {"result": False}
     await async_client.delete("/api/users", headers={"api-key": user.api_key})
