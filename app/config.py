@@ -88,7 +88,7 @@ class Settings(BaseSettings):
 
     @classmethod
     def static_path(cls) -> str:
-        """Путь к директории для статических файлов"""
+        """Путь к директории для статических файлов."""
         return os.path.join(os.path.dirname(__file__), "static")
 
     @classmethod

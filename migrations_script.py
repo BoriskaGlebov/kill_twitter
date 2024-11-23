@@ -15,7 +15,6 @@ def run_alembic_command(command: str) -> None:
     :param command: Команда для выполнения в виде строки.
     :raises SystemExit: Если команда завершилась с ошибкой, программа завершится с соответствующим кодом ошибки.
     """
-
     result: subprocess.CompletedProcess[str] = subprocess.run(command, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
         logger.error(f"Ошибка при выполнении команды: {' '.join(command)}")

@@ -8,7 +8,7 @@ from app.users.dao import UserDAO
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_base_dao_find_all(test_db):
-    """Проверка получения всех пользователей"""
+    """Проверка получения всех пользователей."""
     res = await UserDAO.find_all(async_session=test_db)
     assert len(res) == 10
     logger.info("ОК")
@@ -17,7 +17,7 @@ async def test_base_dao_find_all(test_db):
 @pytest.mark.parametrize("data_id, expected", [(num + 1, num + 1) for num in range(10)])
 @pytest.mark.asyncio(loop_scope="session")
 async def test_base_dao_find_one_or_none_by_id(test_db, data_id, expected):
-    """Проверка получения пользователя по id"""
+    """Проверка получения пользователя по id."""
     res = await UserDAO.find_one_or_none_by_id(async_session=test_db, data_id=data_id)
     assert res.id == expected
     logger.info("ОК")
@@ -25,7 +25,7 @@ async def test_base_dao_find_one_or_none_by_id(test_db, data_id, expected):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_base_dao_find_one_or_none_by_id_none(test_db):
-    """Проверка получения пользователя по id, но вернет NONE"""
+    """Проверка получения пользователя по id, но вернет NONE."""
     res = await UserDAO.find_one_or_none_by_id(async_session=test_db, data_id=0)
     assert res is None
     logger.info("ОК")
@@ -37,7 +37,7 @@ async def test_base_dao_find_one_or_none_by_id_none(test_db):
 # )
 @pytest.mark.asyncio(loop_scope="session")
 async def test_base_dao_find_one_or_none(test_db):
-    """Проверка получения пользователя по параметру"""
+    """Проверка получения пользователя по параметру."""
     all_users = await UserDAO.find_all(async_session=test_db)
     for num, el in enumerate(all_users):
         if el.id % 2:
@@ -55,7 +55,7 @@ async def test_base_dao_find_one_or_none(test_db):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_base_dao_find_one_or_none_none(test_db):
-    """Проверка получения пользователя по параметру, но вернет NONE"""
+    """Проверка получения пользователя по параметру, но вернет NONE."""
     res = await UserDAO.find_one_or_none(async_session=test_db, **{"id": 0})
     assert res is None
     logger.info("ОК")
@@ -63,7 +63,7 @@ async def test_base_dao_find_one_or_none_none(test_db):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_base_dao_add(test_db):
-    """Проверка добавления пользователя и возможные ошибки"""
+    """Проверка добавления пользователя и возможные ошибки."""
     test_user = UserFactory()
     add_user = await UserDAO.add(async_session=test_db, **test_user.to_dict())
     assert add_user.to_dict()["first_name"] == test_user.first_name
@@ -79,7 +79,7 @@ async def test_base_dao_add(test_db):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_base_dao_update(test_db):
-    """Проверка обновления пользователя и возможные ошибки"""
+    """Проверка обновления пользователя и возможные ошибки."""
     test_user = UserFactory().to_dict()
     add_user = await UserDAO.add(async_session=test_db, **test_user)
     assert add_user.first_name == test_user["first_name"]
@@ -106,7 +106,7 @@ async def test_base_dao_update(test_db):
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_base_dao_delete(test_db):
-    """Проверка удаления пользователя и возможные ошибки"""
+    """Проверка удаления пользователя и возможные ошибки."""
     test_user = UserFactory()
     await UserDAO.add(async_session=test_db, **test_user.to_dict())
     del_user = await UserDAO.delete(async_session=test_db, first_name=test_user.first_name)

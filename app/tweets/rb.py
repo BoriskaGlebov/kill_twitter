@@ -2,49 +2,35 @@ from pydantic import BaseModel
 
 
 class RBTweet(BaseModel):
+    """
+    Модель для представления результата операции с твитом.
+
+    Attributes:
+        result (bool): Флаг, указывающий на успешность операции. По умолчанию True.
+        tweet_id (int): Уникальный идентификатор твита.
+    """
+
     result: bool = True
     tweet_id: int
 
 
-# class RBUsersAdd(BaseModel):
-#     first_name: str = Field(..., description="Имя")
-#     last_name: str = Field(..., description="Фамилия")
-#     api_key: str = Field(..., description="Token при регистрации не хэшированный")
-#
-#
-# class RBUsersUpdate(BaseModel):
-#     first_name: str | None = None
-#     last_name: str | None = None
-#     api_key: str | None = None
-#
-#
 class RBCorrect(BaseModel):
+    """
+    Модель для представления результата корректной операции.
+
+    Attributes:
+        result (bool): Флаг, указывающий на успешность операции. По умолчанию True.
+    """
+
     result: bool = True
 
 
 class RBUncorrect(BaseModel):
+    """
+    Модель для представления результата некорректной операции.
+
+    Attributes:
+        result (bool): Флаг, указывающий на успешность операции. По умолчанию False.
+    """
+
     result: bool = False
-
-
-#
-#
-# class RBFollower(BaseModel):
-#     id: int
-#     first_name: str
-#     last_name: str
-#
-# class RBFollowing(BaseModel):
-#     id: int
-#     first_name: str
-#     last_name: str
-#
-# class RBUser(BaseModel):
-#     id: int
-#     first_name: str
-#     last_name: str
-#     followers: List[RBFollower]
-#     following: List[RBFollowing]
-#
-# class RBMe(BaseModel):
-#     result: bool
-#     user: RBUser

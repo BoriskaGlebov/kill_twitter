@@ -9,7 +9,7 @@ from app.medias.dao import MediaDAO
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_upload_image(async_client, test_db):
-    """Тест добавления медиа файлов"""
+    """Тест добавления медиа файлов."""
     user = UserFactory()
     await async_client.post("/api/users", params=user.to_dict())
     # Не авторизован

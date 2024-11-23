@@ -25,6 +25,19 @@ str_null_true = Annotated[str, mapped_column(nullable=True)]
 
 
 class Base(AsyncAttrs, DeclarativeBase):
+    """
+    Базовый класс для всех моделей базы данных.
+
+    Этот класс предоставляет общие атрибуты и методы для всех моделей,
+    основанных на SQLAlchemy. Он определяет автоматические поля
+    `created_at` и `updated_at`, а также метод `to_dict`, который
+    преобразует экземпляр модели в словарь.
+
+    Attributes:
+       created_at (Mapped[datetime]): Дата и время создания записи.
+       updated_at (Mapped[datetime]): Дата и время последнего обновления записи.
+    """
+
     __abstract__ = True
 
     @declared_attr.directive
@@ -35,4 +48,10 @@ class Base(AsyncAttrs, DeclarativeBase):
     updated_at: Mapped[updated_at]
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Преобразует экземпляр модели в словарь.
+
+        Возвращает:
+            dict[str, Any]: Словарь, содержащий имена колонок и их значения.
+        """
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

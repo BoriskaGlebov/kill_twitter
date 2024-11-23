@@ -37,6 +37,20 @@ api_key_header = APIKeyHeader(name="api-key", auto_error=False)
 
 # Зависимость для проверки API-ключа
 async def verify_api_key(async_session_dep=Depends(get_session), api_key: str = Depends(api_key_header)):
+    """
+    Проверяет наличие и корректность API-ключа.
+
+    Эта функция проверяет, существует ли пользователь с указанным API-ключом.
+    Если ключ действителен, он возвращается. В противном случае выбрасывается
+    исключение HTTPException с соответствующим сообщением об ошибке.
+
+    :param async_session_dep: Зависимость для асинхронной сессии базы данных.
+    :param api_key: API-ключ, переданный в заголовке запроса.
+
+    :raises HTTPException: Если API-ключ отсутствует или не соответствует ни одному пользователю.
+
+    :return: Возвращает API-ключ, если он действителен.
+    """
     if api_key:
         res = await UserDAO.find_one_or_none(async_session=async_session_dep, **{"api_key": api_key})
         if res:
@@ -50,7 +64,7 @@ async def verify_api_key(async_session_dep=Depends(get_session), api_key: str = 
 
 
 async def main():
-    """Здесь я тестирую методы работы с БД"""
+    """Здесь я тестирую методы работы с БД."""
     # async for session in get_session():
     #     out = {"result": True, "tweets": []}
     #

@@ -16,6 +16,8 @@ class UserFactory(factory.Factory):
     """Фабрика для создания рандомных пользователей."""
 
     class Meta:
+        """Мета класс."""
+
         model = User
 
     # Генерация полей пользователя
@@ -25,9 +27,10 @@ class UserFactory(factory.Factory):
 
 
 class FollowsFactory(factory.Factory):
-    """Фабрика рандомных подписок и подписчиков"""
+    """Фабрика рандомных подписок и подписчиков."""
 
     class Meta:
+
         model = Follow
 
     # Генерируем неповторяющиеся комбинации
@@ -50,6 +53,8 @@ class FollowsFactory(factory.Factory):
 
 
 class TweetFactory(factory.Factory):
+    """Фабрика рандомных твитов."""
+
     class Meta:
         model = Tweet
 
@@ -58,6 +63,8 @@ class TweetFactory(factory.Factory):
 
 
 class LikeFactory(factory.Factory):
+    """Фабрика рандомных лайков."""
+
     class Meta:
         model = Like
 
@@ -75,6 +82,8 @@ class LikeFactory(factory.Factory):
 
 
 class TweetMediaFactory(factory.Factory):
+    """Фабрика рандомных медиа для твитов."""
+
     class Meta:
         model = TweetMedia
 
@@ -92,6 +101,8 @@ class TweetMediaFactory(factory.Factory):
 
 
 class MediaFactory(factory.Factory):
+    """Фабрика рандомных медиа файлов."""
+
     class Meta:
         model = Media
         exclude = ("_index",)  # Исключаем _index из аргументов конструктора
@@ -145,7 +156,13 @@ def generate_follow(num: int) -> List[Follow]:
     return out_instances
 
 
-def generate_likes(num):
+def generate_likes(num: int) -> List[Like]:
+    """
+    Генерирует список лайков.
+
+    :param num: Количество подписок для генерации.
+    :return: Список экземпляров Like.
+    """
     out_set = set()  # Множество для хранения уникальных комбинаций
     out_instances = []
 
@@ -161,7 +178,13 @@ def generate_likes(num):
     return out_instances
 
 
-def generate_tweet_media(num):
+def generate_tweet_media(num: int) -> List[TweetMedia]:
+    """
+    Генерирует список уникальных твитов.
+
+    :param num: Количество подписок для генерации.
+    :return: Список экземпляров Follow.
+    """
     out_set = set()  # Множество для хранения уникальных комбинаций
     out_instances = []
 

@@ -22,8 +22,8 @@ remove-unused-variables = true
 
 [tool.flake8]
 max-line-length = 120  # Установите желаемую максимальную длину строки
-ignore = ["E203", "E266", "E501"]  # Игнорируйте определенные ошибки
-exclude = ".venv,__pycache__,build,dist"
+ignore = ["E203", "E266", "E501","D104","D100","D106","D105"]  # Игнорируйте определенные ошибки
+exclude = ".venv,__pycache__,build,dist,migrations"
 builtins = ["Tweet"]
 
 [tool.mypy]

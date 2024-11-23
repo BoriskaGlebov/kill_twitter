@@ -75,7 +75,7 @@ async def clean_database() -> None:
 
 @pytest.fixture(scope="session")
 async def test_db(async_client):
-    """Асинхронную сессию возвращает"""
+    """Асинхронную сессию возвращает."""
     engine = test_engine  # Используем in-memory SQLite базу данных
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)  # Создаем таблицы
@@ -93,23 +93,18 @@ async def test_db(async_client):
 
 @pytest_asyncio.fixture(scope="session")
 async def async_client() -> AsyncGenerator[AsyncClient, None]:
+    """
+    Асинхронный клиент для тестирования.
+
+    Эта фикстура создает асинхронный HTTP-клиент, который используется для
+    выполнения запросов к приложению в тестах. Клиент инициализируется
+    с использованием ASGITransport и может быть использован для
+    отправки запросов к тестируемому приложению.
+
+    :yield: Асинхронный клиент HTTP, который можно использовать в тестах.
+    :rtype: AsyncClient
+    """
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-        # users = [
-        #     {"first_name": f"new_{num + 1}", "last_name": f"new_{num + 1}", "api_key": f"api_key_{num + 1}"}
-        #     for num in range(10)
-        # ]
-        # for user in users:
-        #     res = await client.post("/api/users", params=user)
-        #     assert res.status_code == 201
-        # # Добавляю подписчиков
-        # for follow in range(10):
-        #     for _ in range(3):
-        #
-        #         user_id = randint(1, 10)
-        #         if user_id == follow + 1:
-        #             continue
-        #         res = await client.post(f"/api/users/{user_id}/follow", headers={"api-key": f"api_key_{follow + 1}"})
-        #         assert res.status_code in (201, 409)
         yield client
 
 

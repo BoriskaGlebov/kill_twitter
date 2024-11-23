@@ -1,20 +1,26 @@
 from sqlalchemy import Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database import Base, engine, int_pk
+from app.database import Base, int_pk
 from app.users.models import User
 
 
 class Tweet(Base):
     """
-    Модель таблицы с твитами
+    Модель таблицы с твитами.
+
+    Attributes:
+        id (Mapped[int_pk]): Уникальный идентификатор твита.
+        user_id (Mapped[int]): Идентификатор пользователя, который создал твит.
+        tweet_data (Mapped[str]): Текст твита.
+        user (Mapped[User]): Связь с моделью User, представляющая пользователя, который создал твит.
+        likes (Mapped[list[Like]]): Связь с моделью Like, представляющая лайки на этот твит.
+        tweets_media (Mapped[list[Media]]): Связь с моделью Media для хранения медиафайлов, связанных с твитом.
     """
 
     id: Mapped[int_pk]
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     tweet_data: Mapped[str]
-    # tweet_media_ids: Mapped[int] = mapped_column(Integer, nullable=True)
-    # tweets_media: Mapped[list['TweetMedia']] = relationship('TweetMedia', back_populates='tweet')
     user: Mapped["User"] = relationship("User", back_populates="tweets")
     likes: Mapped[list["Like"]] = relationship("Like", back_populates="user_like", lazy="joined")
     tweets_media = relationship("Media", secondary="tweetmedias", back_populates="tweets", lazy="joined")
@@ -25,23 +31,29 @@ class Tweet(Base):
 
 class TweetMedia(Base):
     """
-    Моедли реализует отношение многие ко многим у таблиц с картинками и с тивитами
+    Модель для реализации отношения многие ко многим между таблицами с медиафайлами и твитами.
+
+    Attributes:
+        tweet_id (Mapped[int]): Идентификатор твита.
+        media_id (Mapped[int]): Идентификатор медиафайла.
     """
 
     tweet_id: Mapped[int] = mapped_column(ForeignKey("tweets.id", ondelete="CASCADE"), primary_key=True)
     media_id: Mapped[int] = mapped_column(ForeignKey("medias.id", ondelete="CASCADE"), primary_key=True)
-    # tweet: Mapped[list['Tweet']] = relationship("Tweet", back_populates='tweets_media')
-    # media: Mapped[list['Media']] = relationship("Media", back_populates='medias')
 
 
 class Like(Base):
-    """ЛАйки на твит конкретнвым пользователем"""
+    """
+    Модель для представления лайков на твиты конкретным пользователем.
+
+    Attributes:
+        user_id (Mapped[int]): Идентификатор пользователя, который поставил лайк.
+        tweet_id (Mapped[int]): Идентификатор твита, на который поставлен лайк.
+        like (Mapped[bool]): Флаг, указывающий на наличие лайка (по умолчанию True).
+        user_like (Mapped[Tweet]): Связь с моделью Tweet для получения информации о твите.
+    """
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     tweet_id: Mapped[int] = mapped_column(ForeignKey("tweets.id", ondelete="CASCADE"), primary_key=True)
     like: Mapped[bool] = mapped_column(Boolean, default=True)
     user_like: Mapped["Tweet"] = relationship("Tweet", back_populates="likes")
-
-
-if __name__ == "__main__":
-    Base.metadata.create_all(engine)

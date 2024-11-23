@@ -12,8 +12,11 @@ M = TypeVar("M", bound=Base)
 
 
 class BaseDAO(Generic[M]):
-    """Базовый класс для доступа к данным в БД
-    Универсальные методы для работы с БД"""
+    """
+    Базовый класс для доступа к данным в БД.
+
+    Универсальные методы для работы с БД.
+    """
 
     model: Type[M]  # Указываем, что model будет типа M
 
@@ -21,6 +24,7 @@ class BaseDAO(Generic[M]):
     async def find_all(cls, async_session: AsyncSession, **filter_by) -> Sequence[M] | None:
         """
         Получение списка всех строк таблицы.
+
         :param async_session: Асинхронная сессия базы данных.
         :param filter_by: Фильтры для выборки.
         :return: Список экземпляров модели.
@@ -34,6 +38,7 @@ class BaseDAO(Generic[M]):
     async def find_one_or_none_by_id(cls, async_session: AsyncSession, data_id: int) -> M | None:
         """
         Получение строки таблицы по id.
+
         :param async_session: Асинхронная сессия базы данных.
         :param data_id: Фильтры для выборки по id
         :return: Экземпляр модели.
@@ -47,6 +52,7 @@ class BaseDAO(Generic[M]):
     async def find_one_or_none(cls, async_session: AsyncSession, **filter_by) -> M | None:
         """
         Получение строки таблицы.
+
         :param async_session: Асинхронная сессия базы данных.
         :param filter_by: Фильтры для выборки
         :return: Экземпляр модели.
@@ -59,7 +65,8 @@ class BaseDAO(Generic[M]):
     @classmethod
     async def add(cls, async_session: AsyncSession, **values) -> M:
         """
-        Добавить строку
+        Добавить строку.
+
         :param async_session: Асинхронная сессия базы данных.
         :param values: Значения которые надо добавить в таблицу
         :return: Экземпляр модели
@@ -78,7 +85,8 @@ class BaseDAO(Generic[M]):
     @classmethod
     async def update(cls, async_session: AsyncSession, filter_by: dict[Any, Any], **values) -> List[M]:
         """
-        Обновить строку
+        Обновить строку.
+
         :param async_session: Асинхронная сессия базы данных.
         :param filter_by: Параметры для фильтрации
         :param values: Значения которые надо добавить в таблицу
@@ -112,7 +120,8 @@ class BaseDAO(Generic[M]):
     @classmethod
     async def delete(cls, async_session: AsyncSession, delete_all: bool = False, **filter_by) -> int:
         """
-        Удаление строки или очистка таблицы
+        Удаление строки или очистка таблицы.
+
         :param async_session: Асинхронная сессия базы данных.
         :param delete_all: Параметр, который определяет полную очистку таблицы
         :param filter_by: Параметры для фильтрации

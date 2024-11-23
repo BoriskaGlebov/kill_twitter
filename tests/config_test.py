@@ -7,14 +7,14 @@ from app.config import get_settings, logger
 
 
 def test_config(config):
-    """Проверка правильности настроек для работы приложения локально"""
+    """Проверка правильности настроек для работы приложения локально."""
     assert config.get_test_db_url() == "postgresql+asyncpg://admin:password@localhost:5432/test_kill_twitter"
     assert config.get_db_url() == "postgresql+asyncpg://admin:password@localhost:5432/kill_twitter"
     logger.info("ОК")
 
 
 def test_monkeypass(monkeypatch):
-    """Проверка правильности настроек для работы приложения в контейнере"""
+    """Проверка правильности настроек для работы приложения в контейнере."""
     monkeypatch.setenv("ENV", "docker")
     config = get_settings()
     assert config.get_test_db_url() == "postgresql+asyncpg://admin:password@db:5432/test_kill_twitter"
@@ -24,7 +24,7 @@ def test_monkeypass(monkeypatch):
 
 # Тест на некорректные значения в .env
 def test_invalid_settings():
-    """# Тест на некорректные значения в .env"""
+    """# Тест на некорректные значения в .env."""
     with patch.dict(
         os.environ,
         {

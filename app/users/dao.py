@@ -9,6 +9,12 @@ from app.users.models import Follow, User
 
 
 class UserDAO(BaseDAO[User]):
+    """
+    Класс для доступа к данным в БД.
+
+    Работает с таблицей User
+    """
+
     model: Type[User] = User
 
     @classmethod
@@ -73,4 +79,10 @@ class UserDAO(BaseDAO[User]):
 
 
 class FollowDAO(BaseDAO[Follow]):
+    """
+    Класс для доступа к данным в БД.
+
+    Работает с таблицей Follow
+    """
+
     model: type[Follow] = Follow  # Добавьте типизацию для модели Follow

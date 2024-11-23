@@ -56,7 +56,8 @@ tags_metadata: List[Dict[str, Any]] = [
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Действия перед запуском приложения
+    Действия перед запуском приложения.
+
     :param app:
     :return:
     """
@@ -153,6 +154,7 @@ app.add_exception_handler(RequestValidationError, validation_exception_handler) 
 
 @app.get("/", response_class=HTMLResponse)
 async def hello_world(request: Request):
+    """Роут для загрузки самой страницы."""
     return templates.TemplateResponse(request=request, name="index.html")
 
 
