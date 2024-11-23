@@ -20,7 +20,9 @@ jobs:
 
     - name: Add known hosts
       run: echo "${{ secrets.SERVER_IP }} $(ssh-keyscan -H ${{ secrets.SERVER_IP }})" >> ~/.ssh/known_hosts  # Добавление сервера в known_hosts
-
+    - name: Test SSH connection
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "whoami"  # Проверка подключения
 #    - name: Deploy to server
 #      run: |
 #        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
