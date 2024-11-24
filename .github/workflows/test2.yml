@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline Test & Linters
 
 on:
   push:
@@ -22,6 +22,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Download .env file artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: env-file
 
       - name: Build and run Docker Compose
         run: |
