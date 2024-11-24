@@ -23,11 +23,11 @@ jobs:
     - name: Test SSH connection
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "whoami" && echo PRIVET # Проверка подключения
-#    - name: Deploy to server
-#      run: |
-#        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-#          cd app/ || exit  # Переход в директорию приложения
-#          git pull origin main            # Обновление кода из репозитория
-#          docker-compose down              # Остановка текущих контейнеров (если они запущены)
-#          docker-compose up -d             # Запуск контейнеров в фоновом режиме
-#        EOF
+    - name: Deploy to server
+      run: |
+        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          cd app/ || exit  # Переход в директорию приложения
+          git pull origin main            # Обновление кода из репозитория
+          docker-compose down              # Остановка текущих контейнеров (если они запущены)
+          docker-compose up -d             # Запуск контейнеров в фоновом режиме
+        EOF
