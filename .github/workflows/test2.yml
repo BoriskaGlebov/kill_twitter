@@ -47,7 +47,11 @@ jobs:
       - name: Run Alembic Migrations
         run: |
           sleep 10  # Подождите, пока база данных будет готова (опционально)
-          docker exec <your_container_name> alembic -x db=test upgrade head
+          alembic -x db=test upgrade head
+
+      - name: Check Alembic Migrations
+        run: |
+          alembic current
 
       - name: Run unit tests
         run: python -m pytest tests
