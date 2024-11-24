@@ -6,6 +6,10 @@ on:
       - main  # Укажите ветку, на которую будет происходить деплой
 
 jobs:
+  setup:
+    uses: ./.github/workflows/new.yml  # Call the reusable workflow
+    with:
+      python-version: '3.12'
   deploy:
     runs-on: ubuntu-latest
 
