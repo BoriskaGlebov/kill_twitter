@@ -23,10 +23,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download .env file artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: env-file
+      - name: .env file create
+        run: |
+          echo "Creating .env file"
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_TEST=${{ secrets.DB_TEST }}" >> .env
+          echo "UPLOAD_DIRECTORY=${{ secrets.UPLOAD_DIRECTORY }}" >> .env
+          echo "PYTHONPATH=${{ secrets.PYTHONPATH }}" >> .env
+
+      - name: .env file check
+        run: |
+          echo "Contents of .env file:"
+          cat .env
 
       - name: Build and run Docker Compose
         run: |
