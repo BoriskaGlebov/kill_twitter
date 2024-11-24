@@ -30,6 +30,7 @@ jobs:
         cd app/kill_twitter || exit  # Переход в директорию приложения
         git pull origin main            # Обновление кода из репозитория
         EOF
+
 #        echo "Creating .env file"
 #        echo "DB_USER=${{ secrets.DB_USER }}" >> .env
 #        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
