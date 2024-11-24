@@ -70,8 +70,9 @@ services:
     image: nginx:latest
     container_name: nginx_static
     ports:
+      - "80:80"
 #      - "81:81"  # Проброс порта для доступа к Nginx
-      - "80:80"   # я на локлаьной машине тестировал на 81 порту
+#      - "80:80"   # я на локлаьной машине тестировал на 81 порту
     restart: always
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf  # Ваш файл конфигурации Nginx
