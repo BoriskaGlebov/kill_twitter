@@ -39,6 +39,6 @@ jobs:
         echo "DB_TEST=${{ secrets.DB_TEST }}" >> .env
         echo "UPLOAD_DIRECTORY=${{ secrets.UPLOAD_DIRECTORY }}" >> .env
         echo "PYTHONPATH=${{ secrets.PYTHONPATH }}" >> .env
+        docker-compose down  # Остановка текущих контейнеров (если они запущены)
+        docker-compose up -d
         EOF
-#        docker-compose down              # Остановка текущих контейнеров (если они запущены)
-#        docker-compose up -d             # Запуск контейнеров в фоновом режиме
