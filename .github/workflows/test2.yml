@@ -44,6 +44,10 @@ jobs:
         run: |
           docker compose up --build -d
 
+      - name: Check if Alembic is installed
+        run: |
+          pip show alembic || echo "Alembic is not installed"
+
       - name: Run Alembic Migrations
         run: |
           sleep 10  # Подождите, пока база данных будет готова (опционально)
