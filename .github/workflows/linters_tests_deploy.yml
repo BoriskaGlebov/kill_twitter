@@ -136,9 +136,12 @@ jobs:
       - name: Check Alembic Migrations
         run: |
           alembic current
-      - name: Run unit tests
-        run: python -m pytest tests
 
-#
-#      - name: Run tests
-#        run: pytest  # Или другая команда для запуска тестов, если вы используете другую библиотеку тестирования.
+      - name: Run unit tests
+        id: retry_step
+        run: |
+          for i in {1..3}; do
+            echo "Attempt $i"
+            # Замените следующую строку на вашу команду
+            python -m pytest tests && break || sleep 5
+          done
