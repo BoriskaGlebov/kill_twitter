@@ -73,7 +73,7 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
-#    needs: [ mypy, black, isort, flake8 ]  # Зависит от всех линтеров
+    needs: [ mypy, black, isort, flake8 ]  # Зависит от всех линтеров
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -145,3 +145,18 @@ jobs:
             # Замените следующую строку на вашу команду
             python -m pytest tests && break || sleep 5
           done
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: tests  # Зависит от успешного завершения job tests.
+    if: github.ref == 'refs/heads/main'  # Выполняется только для ветки main.
+    steps:
+      - name: Checkout code for deployment
+        uses: actions/checkout@v4
+
+      # Добавьте здесь шаги для деплоя, например, копирование файлов на сервер или вызов API.
+      # Пример (замените на ваши команды):
+
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to production server..."
