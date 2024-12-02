@@ -31,11 +31,24 @@
    ```bash
    git clone https://github.com/yourusername/kill-twitter-api.git
    cd kill-twitter-api
-2. **Сборка и запуск с помощью Docker Compose**
+2. **Создание .env, .env.docker**
+Для корректной работы необходимо отредактировать два файла шаблонов для .env-template и .env.docker-template.\
+Там указываются переменные для успешной работы приложения
+>DB_USER=some user\
+DB_PASSWORD=some password\
+DB_HOST=localhost or db - здесь localhost для файла .env, db -.env.docker соответственно \
+DB_PORT=5432 - стандартный порт для БД\
+DB_NAME=kill_twitter - название для БД\
+DB_TEST=test_kill_twitter - название для тестовой БД\
+UPLOAD_DIRECTORY=/static/images - место храниния статических файлоы\
+PYTHONPATH=. - это используется для корректного запуска тестов
+3. **Сборка и запуск с помощью Docker Compose**
     ```bash
    docker-compose up --build -d
-3. **Доступ к документации Swagger**:
-    Откройте браузер и перейдите по адресу http://localhost:8000/docs, чтобы просмотреть документацию API.
+4. **Доступ к документации Swagger**:
+    Откройте браузер и перейдите по адресу **http://localhost:8000/docs**, чтобы просмотреть документацию API.
+5. **Доступ к приложению**:
+    Откройте браузер и перейдите по адресу **http://localhost**, чтобы просмотреть приложение.
 
 ## Контактная информация
 
