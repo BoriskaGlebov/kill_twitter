@@ -1,0 +1,17 @@
+name: Linters Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - dev2
+  pull_request:
+    branches:
+      - main
+      - dev2
+
+jobs:
+  setup:
+    uses: ./.github/workflows/setup-python.yml  # Call the reusable workflow
+    with:
+      python-version: '3.12'  # Specify the Python version
