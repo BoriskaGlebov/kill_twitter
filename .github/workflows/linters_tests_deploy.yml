@@ -180,7 +180,7 @@ jobs:
         - name: Deploy to server
           run: |
             ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            cd app/kill_twitter || exit  # Переход в директорию приложения
+            cd production/kill_twitter || exit  # Переход в директорию приложения
             git pull origin main            # Обновление кода из репозитория
             echo "Creating .env file"
             echo rm -f .env
