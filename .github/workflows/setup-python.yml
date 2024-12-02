@@ -20,7 +20,7 @@ jobs:
           python-version: ${{ inputs.python-version }}
 
       - name: Check version
-        run: echo python3.12 -V
+        run: python3.12 -V
 
 #      - name: Set up Python
 #        uses: actions/setup-python@v4
