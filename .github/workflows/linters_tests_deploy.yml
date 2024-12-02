@@ -151,12 +151,47 @@ jobs:
     needs: tests  # Зависит от успешного завершения job tests.
     if: github.ref == 'refs/heads/main'  # Выполняется только для ветки main.
     steps:
-      - name: Checkout code for deployment
-        uses: actions/checkout@v4
+        - name: Checkout repository
+          uses: actions/checkout@v4  # Клонирование репозитория
 
-      # Добавьте здесь шаги для деплоя, например, копирование файлов на сервер или вызов API.
-      # Пример (замените на ваши команды):
+        - name: Set up SSH key
+          uses: webfactory/ssh-agent@v0.5.3  # Настройка SSH-ключа
+          with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Приватный ключ из секретов
 
-      - name: Deploy to Production
-        run: |
-          echo "Deploying to production server..."
+        - name: Add known hosts
+          run: echo "${{ secrets.SERVER_IP }} $(ssh-keyscan -H ${{ secrets.SERVER_IP }})" >> ~/.ssh/known_hosts  # Добавление сервера в known_hosts
+        - name: Test SSH connection
+          run: |
+            ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "whoami" && echo PRIVET # Проверка подключения
+
+        - name: .env.docker file create
+          run: |
+            echo "Creating .env.docker file"
+            echo "DB_USER=${{ secrets.DB_USER }}" >> .env.docker
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env.docker
+            echo "DB_HOST=${{ secrets.DB_HOST_DOCKER }}" >> .env.docker
+            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env.docker
+            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env.docker
+            echo "DB_TEST=${{ secrets.DB_TEST }}" >> .env.docker
+            echo "UPLOAD_DIRECTORY=${{ secrets.UPLOAD_DIRECTORY }}" >> .env.docker
+            echo "PYTHONPATH=${{ secrets.PYTHONPATH }}" >> .env.docker
+
+        - name: Deploy to server
+          run: |
+            ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            cd app/kill_twitter || exit  # Переход в директорию приложения
+            git pull origin main            # Обновление кода из репозитория
+            echo "Creating .env file"
+            echo rm -f .env
+            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+            echo "DB_TEST=${{ secrets.DB_TEST }}" >> .env
+            echo "UPLOAD_DIRECTORY=${{ secrets.UPLOAD_DIRECTORY }}" >> .env
+            echo "PYTHONPATH=${{ secrets.PYTHONPATH }}" >> .env
+            docker-compose down  # Остановка текущих контейнеров (если они запущены)
+            docker-compose up -d
+            EOF
