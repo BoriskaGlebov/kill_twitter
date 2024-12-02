@@ -124,10 +124,20 @@ jobs:
         run: |
           echo "Contents of .env.docker file:"
           cat .env.docker
-#
-#      - name: Build and run Docker Compose
-#        run: |
-#          docker compose up --build -d
+
+      - name: Build and run Docker Compose
+        run: |
+          docker compose up --build -d
+
+      - name: Run Alembic Migrations
+        run: |
+          sleep 10
+          alembic -x db=test upgrade head
+      - name: Check Alembic Migrations
+        run: |
+          alembic current
+      - name: Run unit tests
+        run: python -m pytest tests
 
 #
 #      - name: Run tests
