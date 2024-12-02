@@ -91,8 +91,8 @@ async def test_db(async_client):
     sessionlocal = async_test_session
 
     async with sessionlocal() as session:
-        generate_users(10)
-        generate_follow(10)
+        # generate_users(10)
+        # generate_follow(10)
         await UserDAO.add(session, **{"first_name": "Test_name", "last_name": "Test_surname", "api_key": "test"})
         [await UserDAO.add(session, **user.to_dict()) for user in generate_users(100)]
         [await FollowDAO.add(session, **follow.to_dict()) for follow in generate_follow(100)]
