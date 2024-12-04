@@ -183,7 +183,7 @@ jobs:
             cd production/kill_twitter || exit  # Переход в директорию приложения
             git pull origin main            # Обновление кода из репозитория
             echo "Creating .env file"
-            echo rm -f .env
+            rm -f .env .env.docker
             echo "DB_USER=${{ secrets.DB_USER }}" >> .env
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
             echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
@@ -202,5 +202,5 @@ jobs:
             echo "UPLOAD_DIRECTORY=${{ secrets.UPLOAD_DIRECTORY }}" >> .env.docker
             echo "PYTHONPATH=${{ secrets.PYTHONPATH }}" >> .env.docker
             docker compose down  # Остановка текущих контейнеров (если они запущены)
-            docker compose up -d
+            docker compose up -d --build
             EOF
